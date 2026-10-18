@@ -1,0 +1,32 @@
+{
+  "notice": "SYNTHETIC AND FABRICATED. Illustrative-only case summary for the public case study. No real alert, customer, case, or regulatory material is represented.",
+  "data_classification": "synthetic-illustrative-only",
+  "case_id": "SYNTH-CASE-0001",
+  "tenant_id": "SYNTH-TENANT-A",
+  "triage_priority": "illustrative-high",
+  "triage_note": "Triage priority orders review work. It is not a fraud probability and not a production operating point.",
+  "evidence": [
+    {
+      "kind": "prior-transaction-pattern",
+      "summary": "Two earlier synthetic events in the same synthetic corridor share the illustrative pattern.",
+      "provenance": "synthetic-generator"
+    },
+    {
+      "kind": "guidance-citation",
+      "summary": "Illustrative citation placeholder to a stub regulatory registry entry.",
+      "provenance": "stub-registry",
+      "citation_verified": true
+    }
+  ],
+  "draft_status": "for-human-review-only",
+  "review": {
+    "state": "pending_review",
+    "reviewer": null,
+    "note": "No disposition exists until a named human reviewer transitions this case."
+  },
+  "audit": {
+    "entries": 3,
+    "note": "Illustrative audit count. The private product records attributed, append-only transitions."
+  },
+  "disclaimer": "Abstention is a valid outcome when evidence is weak; this example shows a cited case, not a decision."
+}

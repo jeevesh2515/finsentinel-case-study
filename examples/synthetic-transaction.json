@@ -1,0 +1,14 @@
+{
+  "notice": "SYNTHETIC AND FABRICATED. Illustrative-only record created for the public case study. Not a real transaction, not from any customer system, and not copied from any production record.",
+  "data_classification": "synthetic-illustrative-only",
+  "transaction_id": "SYNTH-TXN-0001",
+  "tenant_id": "SYNTH-TENANT-A",
+  "source_system": "SYNTH-SOURCE-1",
+  "sender": "Synthetic Sender Ltd",
+  "recipient": "Synthetic Recipient Ltd",
+  "amount": 1250.0,
+  "currency": "GBP",
+  "occurred_at": "2026-01-15T09:30:00Z",
+  "status": "illustrative-only",
+  "note": "Field names are generic and do not describe the private product schema."
+}

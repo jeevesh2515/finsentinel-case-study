@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 620" width="1040" height="620" role="img" aria-labelledby="title desc">
+  <title id="title">Illustrative mock interface poster</title>
+  <desc id="desc">A hand-drawn, fabricated mock of an investigation review screen. It is not a screenshot of the product and contains invented, synthetic values only.</desc>
+  <style>
+    .panel { fill: #101418; stroke: #3a4750; stroke-width: 1.5; }
+    .chip { fill: #1b232b; stroke: #d97706; stroke-width: 1; }
+    .chip-green { fill: #1d2a1f; stroke: #4ade80; stroke-width: 1; }
+    .label { fill: #e8edf2; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; font-weight: 600; }
+    .sub { fill: #9fb0bd; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+    .mono { fill: #c8d3dc; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+    .banner { fill: #241c22; stroke: #c084fc; stroke-width: 1.5; }
+  </style>
+  <rect x="0" y="0" width="1040" height="620" fill="#0b0e11"/>
+
+  <text x="40" y="46" class="label" font-size="20">Illustrative mock interface — fabricated data, not a screenshot</text>
+  <text x="40" y="70" class="sub">Drawn for this public case study. Values are invented. The real product interface is not published.</text>
+
+  <rect x="40" y="92" width="960" height="34" rx="8" class="banner"/>
+  <text x="60" y="114" class="sub" fill="#d8b4fe">SYNTHETIC DEMONSTRATION — fabricated case, fabricated citations, no customer data — for review discussion only</text>
+
+  <rect x="40" y="150" width="460" height="430" rx="12" class="panel"/>
+  <text x="60" y="182" class="label">Case SYNTH-CASE-0001</text>
+  <rect x="330" y="164" width="150" height="26" rx="13" class="chip"/>
+  <text x="346" y="181" class="sub" fill="#f5c17a">triage: illustrative-high</text>
+
+  <text x="60" y="214" class="sub">Timeline (synthetic)</text>
+  <rect x="60" y="226" width="420" height="60" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="74" y="250" class="mono">09:30  SYNTH-TXN-0001  1250.00 GBP</text>
+  <text x="74" y="270" class="sub">Synthetic Sender Ltd to Synthetic Recipient Ltd</text>
+
+  <rect x="60" y="298" width="420" height="60" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="74" y="322" class="mono">09:32  prior pattern match (synthetic)</text>
+  <text x="74" y="342" class="sub">Two similar synthetic events, same synthetic corridor</text>
+
+  <rect x="60" y="370" width="420" height="60" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="74" y="394" class="mono">09:33  guidance citation (stub registry)</text>
+  <text x="74" y="414" class="sub">Cited chunk verified; abstention when weak evidence</text>
+
+  <text x="60" y="466" class="sub">Generated material: for review only. Cannot change the tier or invent citations.</text>
+  <rect x="60" y="480" width="420" height="72" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="74" y="504" class="mono">draft: evidence summary + chronology</text>
+  <text x="74" y="524" class="mono">citations: 1 verified / 0 invented</text>
+  <text x="74" y="544" class="sub">grounding check: passed (synthetic registry)</text>
+
+  <rect x="530" y="150" width="470" height="430" rx="12" class="panel"/>
+  <text x="550" y="182" class="label">Review actions</text>
+
+  <rect x="550" y="200" width="430" height="54" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="566" y="224" class="sub">Reviewer</text>
+  <text x="566" y="244" class="mono">named human — identity recorded in audit</text>
+
+  <rect x="550" y="272" width="136" height="40" rx="8" class="chip-green"/>
+  <text x="580" y="297" class="label" font-size="13">Approve</text>
+  <rect x="700" y="272" width="136" height="40" rx="8" class="chip"/>
+  <text x="742" y="297" class="label" font-size="13">Escalate</text>
+  <rect x="850" y="272" width="130" height="40" rx="8" fill="#0d1116" stroke="#4ade80"/>
+  <text x="876" y="297" class="label" font-size="13">Draft</text>
+
+  <text x="550" y="344" class="sub">Notes required with every transition; terminal states cannot be re-entered silently.</text>
+
+  <rect x="550" y="364" width="430" height="120" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="566" y="388" class="sub">Audit trail (illustrative)</text>
+  <text x="566" y="412" class="mono">ingested       systemic     09:30</text>
+  <text x="566" y="432" class="mono">scored         systemic     09:33</text>
+  <text x="566" y="452" class="mono">review         named human  pending</text>
+  <text x="566" y="472" class="sub">hash 00000000…00 (placeholder, not a real digest)</text>
+
+  <rect x="550" y="500" width="430" height="60" rx="8" fill="#0d1116" stroke="#2b363e"/>
+  <text x="566" y="524" class="sub">Export: investigation pack (JSON + print HTML)</text>
+  <text x="566" y="544" class="sub">Controlled export; no regulator submission control exists.</text>
+</svg>

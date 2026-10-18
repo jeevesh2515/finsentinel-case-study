@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" width="1040" height="560" role="img" aria-labelledby="title desc">
+  <title id="title">FinSentinel public architecture (simplified)</title>
+  <desc id="desc">Simplified public diagram: synthetic input flows through validation and tenant checks, tenant-scoped storage, triage, evidence retrieval, cited draft, human review, and audit with controlled export. Implementation detail is deliberately omitted.</desc>
+  <style>
+    .box { fill: #101418; stroke: #3a4750; stroke-width: 1.5; }
+    .accent { fill: #1b232b; stroke: #d97706; stroke-width: 1.5; }
+    .human { fill: #1d2a1f; stroke: #4ade80; stroke-width: 1.5; }
+    .label { fill: #e8edf2; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; font-weight: 600; }
+    .sub { fill: #9fb0bd; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12.5px; }
+    .stage { fill: #6b7d8a; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; letter-spacing: 0.08em; }
+    .arrow { stroke: #55656f; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    .note { fill: #8b9aa5; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12.5px; }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#55656f"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1040" height="560" fill="#0b0e11"/>
+  <text x="40" y="46" class="label" font-size="20">Public architecture (simplified)</text>
+  <text x="40" y="70" class="sub">Design intent and trust boundaries only. Source, prompts, schemas, thresholds, and configuration are not published.</text>
+
+  <rect x="40" y="110" width="180" height="74" rx="10" class="box"/>
+  <text x="56" y="142" class="label" font-size="14.5">Synthetic input</text>
+  <text x="56" y="163" class="sub">Fabricated transaction events</text>
+
+  <rect x="260" y="110" width="200" height="74" rx="10" class="accent"/>
+  <text x="276" y="142" class="label" font-size="14.5">Validation + identity</text>
+  <text x="276" y="163" class="sub">Tenant derived server-side</text>
+
+  <rect x="500" y="110" width="200" height="74" rx="10" class="box"/>
+  <text x="516" y="142" class="label" font-size="14.5">Tenant-scoped storage</text>
+  <text x="516" y="163" class="sub">System of record + audit</text>
+
+  <rect x="740" y="110" width="200" height="74" rx="10" class="box"/>
+  <text x="756" y="142" class="label" font-size="14.5">Triage signal</text>
+  <text x="756" y="163" class="sub">Priority, not probability</text>
+
+  <rect x="740" y="250" width="200" height="74" rx="10" class="box"/>
+  <text x="756" y="282" class="label" font-size="14.5">Evidence retrieval</text>
+  <text x="756" y="303" class="sub">Patterns + cited guidance</text>
+
+  <rect x="500" y="250" width="200" height="74" rx="10" class="box"/>
+  <text x="516" y="282" class="label" font-size="14.5">Cited draft material</text>
+  <text x="516" y="303" class="sub">Grounded or abstains</text>
+
+  <rect x="260" y="250" width="200" height="74" rx="10" class="human"/>
+  <text x="276" y="282" class="label" font-size="14.5">Human review</text>
+  <text x="276" y="303" class="sub">Reviewer approves / escalates</text>
+
+  <rect x="40" y="250" width="180" height="74" rx="10" class="box"/>
+  <text x="56" y="282" class="label" font-size="14.5">Audit + export</text>
+  <text x="56" y="303" class="sub">Tamper-evident trail</text>
+
+  <path class="arrow" d="M 220 147 L 254 147"/>
+  <path class="arrow" d="M 460 147 L 494 147"/>
+  <path class="arrow" d="M 700 147 L 734 147"/>
+  <path class="arrow" d="M 840 190 L 840 244"/>
+  <path class="arrow" d="M 740 287 L 706 287"/>
+  <path class="arrow" d="M 500 287 L 466 287"/>
+  <path class="arrow" d="M 260 287 L 226 287"/>
+
+  <rect x="40" y="380" width="900" height="130" rx="10" fill="none" stroke="#33414b" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <text x="60" y="410" class="stage">SAFETY BOUNDARY</text>
+  <text x="60" y="436" class="note">Anomaly score is a triage priority, not a fraud probability.</text>
+  <text x="60" y="458" class="note">Generated text cannot change a risk tier or invent a citation; weak evidence abstains.</text>
+  <text x="60" y="480" class="note">Humans approve, dismiss, or escalate; the system never files, moves money, or contacts a regulator.</text>
+  <text x="60" y="502" class="note">Synthetic data only in every public demonstration.</text>
+</svg>

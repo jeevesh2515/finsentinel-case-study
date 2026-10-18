@@ -1,0 +1,78 @@
+{
+  "notice": "SYNTHETIC AND FABRICATED. This summary reproduces only figures recorded in the private project's dated evaluation evidence, re-stated for public release. It is illustrative documentation, not a performance claim.",
+  "data_classification": "synthetic-illustrative-only",
+  "environment": "single Apple Silicon macOS development machine, local containers, mock model provider, paid provider access disabled",
+  "disclaimer": "These results describe the synthetic test setup and do not predict real-world fraud-detection performance.",
+  "metrics": [
+    {
+      "name": "test_suite",
+      "value": { "unit_passing": 288, "integration_passing": 86 },
+      "date": "2026-10-17",
+      "gate": "local re-verification sweep",
+      "run_type": "local-synthetic",
+      "limitations": "Local suite only; not production proof. Counts at the 2026-10-12 pilot-kit gate were 285 unit / 86 integration."
+    },
+    {
+      "name": "ingestion_throughput",
+      "value": { "requests_per_second": 36.13, "latency_p50_ms": 26.5, "events": 50 },
+      "date": "2026-10-07",
+      "gate": "P7 evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Single run, warm caches, no concurrent load. 2026-10-17 re-run measured 35.55 req/s."
+    },
+    {
+      "name": "consumer_scoring",
+      "value": { "ms_per_event": 6.49 },
+      "date": "2026-10-07",
+      "gate": "P7 evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "2026-10-17 re-run measured 5.28 ms/event."
+    },
+    {
+      "name": "pipeline_execution",
+      "value": { "steps": 5, "ms_per_event": 13.12 },
+      "date": "2026-10-07",
+      "gate": "P7 evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "2026-10-17 re-run measured 14.88 ms/event."
+    },
+    {
+      "name": "dashboard_overview_p50",
+      "value": { "ms": 27.97 },
+      "date": "2026-10-07",
+      "gate": "P7 evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Internal 15 ms aspiration recorded as unmet; 100 ms working budget met."
+    },
+    {
+      "name": "pilot_pack_preparation_p50",
+      "value": { "ms": 177.5, "max_ms": 188.0, "cases": 10, "cited_cases": 7, "abstained_cases": 3 },
+      "date": "2026-10-09",
+      "gate": "P9 pilot-pack evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Recorded pack target marked unmet. 2026-10-17 re-run measured p50 243.7 ms."
+    },
+    {
+      "name": "citation_grounding",
+      "value": { "verified_over_total": 1.0 },
+      "date": "2026-10-09",
+      "gate": "P9 pilot-pack evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Covers 7 cited cases against a stub registry; does not measure guidance applicability or currency."
+    },
+    {
+      "name": "provider_spend_usd",
+      "value": { "spend": 0.0 },
+      "date": "2026-10-17",
+      "gate": "all recorded gates",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Mock provider with paid access disabled; says nothing about cost under real provider usage."
+    }
+  ],
+  "withheld": [
+    "Simulated per-case time saving (assumption-based, explicitly not measured)",
+    "Synthetic anomaly flag rates (generator labels, not detection quality)",
+    "Triage thresholds and calibration values (product internals)",
+    "Cloud cost estimates (modelled, never incurred)"
+  ]
+}
