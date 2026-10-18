@@ -17,34 +17,32 @@
 - **No real customer data, real alerts, or production records were used anywhere.** All data is synthetic.
 
 ```mermaid
-flowchart TD
-    subgraph DataGen["1. Synthetic Fixture Generation"]
-        SEED["Deterministic Seeded Generator"] --> TXNS["50-Event Transaction Benchmark"]
-        SEED --> CASES["10 Synthetic Pilot-Pack Cases"]
-        SEED --> STUB["Versioned Guidance Stub Registry"]
+flowchart LR
+    subgraph DataGen["1. Synthetic Generation"]
+        direction TB
+        G1["50-Event Benchmark"]
+        G2["10 Pilot Cases"]
+        G3["Guidance Stub Registry"]
     end
 
-    subgraph Harness["2. Measurement Harness (Local Stack)"]
-        TXNS --> INGEST["Intake Throughput (~36 req/s)"]
-        INGEST --> SCORING["Feature & Triage Scoring (~6.5 ms/event)"]
-        SCORING --> DASH["Dashboard Query (p50 ~28 ms)"]
-        CASES --> PACKS["Pilot Pack Prep (p50 ~177.5 ms)"]
-        STUB --> GROUND["Citation Grounding Check (Score: 1.0)"]
+    subgraph Harness["2. Measurement Harness"]
+        direction TB
+        H1["Ingest: ~36 req/s"]
+        H2["Scoring: ~6.5 ms/event"]
+        H3["Pack p50: ~177.5 ms"]
     end
 
-    subgraph Gates["3. Verification & Budget Quality Gates"]
-        PACKS --> SUITE["288 Unit + 86 Integration Tests"]
-        GROUND --> SUITE
-        SUITE --> SPEND["$0.00 Provider Spend (Mock Mode)"]
-        SPEND --> SMOKE["Smoke & Preflight Verification (Passed)"]
+    subgraph Gates["3. Verification Gates"]
+        direction TB
+        V1["288 Unit + 86 Integration"]
+        V2["Citation Grounding: 1.0"]
+        V3["Spend: $0.00 (Mock Mode)"]
     end
 
-    classDef default fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
-    classDef highlight fill:#1b232b,stroke:#d97706,color:#f5c17a,font-weight:bold;
-    classDef verified fill:#1d2a1f,stroke:#4ade80,color:#86efac,font-weight:bold;
+    DataGen --> Harness --> Gates
 
-    class GROUND,SPEND,SMOKE verified;
-    class INGEST,SCORING highlight;
+    classDef box fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:11px;
+    class G1,G2,G3,H1,H2,H3,V1,V2,V3 box;
 ```
 
 ## Metrics and definitions

@@ -54,39 +54,13 @@ The public architecture is documented in [ARCHITECTURE.md](ARCHITECTURE.md) and 
 ### End-to-end processing pipeline
 
 ```mermaid
-flowchart TD
-    subgraph Intake["1. Intake & Identity Boundary"]
-        TXN["Synthetic Transaction Input"] --> VAL["Schema Validation & Strict Money Typing"]
-        VAL --> TENANT["Server-Derived Tenant Scoping"]
-    end
+flowchart LR
+    A["1. Intake & Tenant Identity<br/><sub>Server-derived tenant scope</sub>"] --> B["2. Storage & Triage Signal<br/><sub>Triage priority, not fraud %</sub>"]
+    B --> C["3. Evidence & Grounding<br/><sub>Verified citations or abstain</sub>"]
+    C --> D["4. Named Human Review<br/><sub>Approve, escalate, audit trail</sub>"]
 
-    subgraph Analysis["2. Persistence & Triage"]
-        TENANT --> DB[("Tenant-Scoped Storage")]
-        DB --> FEAT["History Feature Aggregation"]
-        FEAT --> SCORE["Triage Anomaly Signal\n(Priority, Not Fraud Probability)"]
-    end
-
-    subgraph Grounding["3. Evidence Retrieval & Grounding"]
-        SCORE --> RETRIEVE["Pattern & Guidance Retrieval"]
-        RETRIEVE --> GROUND{"Grounding Check"}
-        GROUND -->|Evidence Verified| DRAFT["Grounded Draft Pack"]
-        GROUND -->|Weak Evidence| ABSTAIN["Explicit Abstention\n(No Padded Claims)"]
-    end
-
-    subgraph Review["4. Human Decision & Audit Boundary"]
-        DRAFT --> HUMAN["Named Human Reviewer\n(Approve / Escalate / Clear)"]
-        ABSTAIN --> HUMAN
-        HUMAN --> AUDIT[("Append-Only Audit Trail\n& Controlled Pack Export")]
-    end
-
-    classDef default fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
-    classDef highlight fill:#1b232b,stroke:#d97706,color:#f5c17a,font-weight:bold;
-    classDef humanReview fill:#1d2a1f,stroke:#4ade80,color:#86efac,font-weight:bold;
-    classDef abstain fill:#241c22,stroke:#c084fc,color:#e9d5ff;
-
-    class SCORE highlight;
-    class HUMAN humanReview;
-    class ABSTAIN abstain;
+    classDef step fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
+    class A,B,C,D step;
 ```
 
 The generic data flow:
@@ -105,23 +79,6 @@ Synthetic transaction input
 ### Human-in-the-loop review lifecycle
 
 Every state transition is a named human decision recorded in the append-only audit trail. The system assists investigation preparation; humans decide outcomes.
-
-```mermaid
-stateDiagram-v2
-    [*] --> TriageOutcome: Event Scored
-    TriageOutcome --> PendingReview: Priority Requires Human Review
-    TriageOutcome --> InsufficientEvidence: Weak Evidence (Abstains)
-
-    PendingReview --> InReview: Claimed by Named Reviewer
-
-    InReview --> Cleared: Reviewer Confirms Low Risk
-    InReview --> Escalated: Reviewer Routes to Senior Team
-    InReview --> DraftedForReview: Reviewer Requests Added Detail
-
-    Cleared --> [*]: Terminal State (Audit Logged)
-    Escalated --> [*]: Terminal State (Audit Logged)
-    DraftedForReview --> [*]: Terminal State (Audit Logged)
-```
 
 ![FinSentinel Human Review Workflow Lifecycle](assets/workflow-public.svg)
 

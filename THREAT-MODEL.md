@@ -14,46 +14,32 @@ This is a public-safe summary of the security thinking behind FinSentinel. It is
 ## Trust boundaries
 
 ```mermaid
-flowchart TD
-    subgraph External["External Untrusted Zone"]
-        CLIENT["External Caller / Integration Client"]
+flowchart LR
+    subgraph Ingress["Ingress Layer"]
+        direction TB
+        T1["1. API Boundary<br/><sub>Strict validation & rate limits</sub>"]
+        T2["2. Tenant Isolation<br/><sub>Row-level security & split roles</sub>"]
+        T1 --> T2
     end
 
-    subgraph B1["1. API Boundary"]
-        CLIENT -->|Untrusted Payload| API["FastAPI Intake / Validation Engine"]
-        AUTH["Server Authentication & Tenant Derivation"] --> API
+    subgraph Engine["Processing Layer"]
+        direction TB
+        T3["3 & 4. Guidance & Provider<br/><sub>Redacted payloads & spend guard</sub>"]
+        T5["5. Grounding Verification<br/><sub>Citations match or abstain</sub>"]
+        T3 --> T5
     end
 
-    subgraph B2["2. Tenant Data Isolation Boundary"]
-        API -->|Scoped Application Role| DB[("PostgreSQL Multi-Tenant Store\n(Row-Level Isolation & Split Roles)")]
+    subgraph Authority["Human Authority Layer"]
+        direction TB
+        T6["6. Review Decision<br/><sub>Named human disposition</sub>"]
+        T7["Audit Persistence<br/><sub>Append-only transition trail</sub>"]
+        T6 --> T7
     end
 
-    subgraph B34["3 & 4. Worker, Guidance & Model Boundary"]
-        DB --> WORKER["Background Worker"]
-        REGISTRY["Regulatory Guidance Registry\n(Treated as Data, Never Executable)"] -->|Untrusted Content| WORKER
-        WORKER -->|Redacted Payload\nSpend Guard Enforced| MODEL["Provider / Mock Engine"]
-    end
+    Ingress --> Engine --> Authority
 
-    subgraph B5["5. Grounding & State Primacy Boundary"]
-        MODEL -->|Display Material Only| GROUND{"Grounding Verifier"}
-        GROUND -->|Grounding Passed| PACK["Grounded Draft Pack"]
-        GROUND -->|Weak Evidence| ABSTAIN["Explicit Abstention"]
-    end
-
-    subgraph B6["6. Human Decision Boundary"]
-        PACK --> HUMAN["Named Human Reviewer"]
-        ABSTAIN --> HUMAN
-        HUMAN -->|Attributed Transition| AUDIT[("Append-Only Audit Trail")]
-    end
-
-    classDef default fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
-    classDef alert fill:#241c22,stroke:#ef4444,color:#fca5a5;
-    classDef safe fill:#1d2a1f,stroke:#4ade80,color:#86efac,font-weight:bold;
-    classDef boundary fill:#1b232b,stroke:#d97706,color:#f5c17a;
-
-    class CLIENT alert;
-    class HUMAN safe;
-    class GROUND boundary;
+    classDef box fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:11px;
+    class T1,T2,T3,T5,T6,T7 box;
 ```
 
 - **Client to API**: all external input is untrusted; strict validation, authentication, authorization, rate limits.
