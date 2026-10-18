@@ -12,11 +12,11 @@
   </style>
   <rect x="0" y="0" width="1040" height="620" fill="#0b0e11"/>
 
-  <text x="40" y="46" class="label" font-size="20">Illustrative mock interface — fabricated data, not a screenshot</text>
+  <text x="40" y="46" class="label" font-size="20">Illustrative mock interface: fabricated data, not a screenshot</text>
   <text x="40" y="70" class="sub">Drawn for this public case study. Values are invented. The real product interface is not published.</text>
 
   <rect x="40" y="92" width="960" height="34" rx="8" class="banner"/>
-  <text x="60" y="114" class="sub" fill="#d8b4fe">SYNTHETIC DEMONSTRATION — fabricated case, fabricated citations, no customer data — for review discussion only</text>
+  <text x="60" y="114" class="sub" fill="#d8b4fe">SYNTHETIC DEMONSTRATION: fabricated case, fabricated citations, no customer data (for review discussion only)</text>
 
   <rect x="40" y="150" width="460" height="430" rx="12" class="panel"/>
   <text x="60" y="182" class="label">Case SYNTH-CASE-0001</text>
@@ -47,7 +47,7 @@
 
   <rect x="550" y="200" width="430" height="54" rx="8" fill="#0d1116" stroke="#2b363e"/>
   <text x="566" y="224" class="sub">Reviewer</text>
-  <text x="566" y="244" class="mono">named human — identity recorded in audit</text>
+  <text x="566" y="244" class="mono">named human (identity recorded in audit)</text>
 
   <rect x="550" y="272" width="136" height="40" rx="8" class="chip-green"/>
   <text x="580" y="297" class="label" font-size="13">Approve</text>

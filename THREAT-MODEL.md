@@ -13,12 +13,55 @@ This is a public-safe summary of the security thinking behind FinSentinel. It is
 
 ## Trust boundaries
 
-- **Client to API** — all external input is untrusted; strict validation, authentication, authorisation, rate limits.
-- **API to database** — runtime uses a least-privilege role; migrations use a separate role; tenant scope is enforced at the data layer.
-- **Application to external provider** — outbound content is redacted first; provider usage is disabled by default and bounded by a spend guard when enabled.
-- **Retrieved text to application** — retrieved regulatory text is untrusted input and is treated as data, never instructions.
-- **Generated text to control plane** — generated prose cannot mutate state, tiers, or citations.
-- **System to human** — disposition and escalation are human transitions, recorded with reviewer identity.
+```mermaid
+flowchart TD
+    subgraph External["External Untrusted Zone"]
+        CLIENT["External Caller / Integration Client"]
+    end
+
+    subgraph B1["1. API Boundary"]
+        CLIENT -->|Untrusted Payload| API["FastAPI Intake / Validation Engine"]
+        AUTH["Server Authentication & Tenant Derivation"] --> API
+    end
+
+    subgraph B2["2. Tenant Data Isolation Boundary"]
+        API -->|Scoped Application Role| DB[("PostgreSQL Multi-Tenant Store\n(Row-Level Isolation & Split Roles)")]
+    end
+
+    subgraph B34["3 & 4. Worker, Guidance & Model Boundary"]
+        DB --> WORKER["Background Worker"]
+        REGISTRY["Regulatory Guidance Registry\n(Treated as Data, Never Executable)"] -->|Untrusted Content| WORKER
+        WORKER -->|Redacted Payload\nSpend Guard Enforced| MODEL["Provider / Mock Engine"]
+    end
+
+    subgraph B5["5. Grounding & State Primacy Boundary"]
+        MODEL -->|Display Material Only| GROUND{"Grounding Verifier"}
+        GROUND -->|Grounding Passed| PACK["Grounded Draft Pack"]
+        GROUND -->|Weak Evidence| ABSTAIN["Explicit Abstention"]
+    end
+
+    subgraph B6["6. Human Decision Boundary"]
+        PACK --> HUMAN["Named Human Reviewer"]
+        ABSTAIN --> HUMAN
+        HUMAN -->|Attributed Transition| AUDIT[("Append-Only Audit Trail")]
+    end
+
+    classDef default fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
+    classDef alert fill:#241c22,stroke:#ef4444,color:#fca5a5;
+    classDef safe fill:#1d2a1f,stroke:#4ade80,color:#86efac,font-weight:bold;
+    classDef boundary fill:#1b232b,stroke:#d97706,color:#f5c17a;
+
+    class CLIENT alert;
+    class HUMAN safe;
+    class GROUND boundary;
+```
+
+- **Client to API**: all external input is untrusted; strict validation, authentication, authorization, rate limits.
+- **API to database**: runtime uses a least-privilege role; migrations use a separate role; tenant scope is enforced at the data layer.
+- **Application to external provider**: outbound content is redacted first; provider usage is disabled by default and bounded by a spend guard when enabled.
+- **Retrieved text to application**: retrieved regulatory text is untrusted input and is treated as data, never instructions.
+- **Generated text to control plane**: generated prose cannot mutate state, tiers, or citations.
+- **System to human**: disposition and escalation are human transitions, recorded with reviewer identity.
 
 ## High-level threats and design responses
 

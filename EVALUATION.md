@@ -16,6 +16,37 @@
 - Regulatory guidance in the recorded gates comes from a small versioned stub registry with content hashes; it is not a full regulatory corpus.
 - **No real customer data, real alerts, or production records were used anywhere.** All data is synthetic.
 
+```mermaid
+flowchart TD
+    subgraph DataGen["1. Synthetic Fixture Generation"]
+        SEED["Deterministic Seeded Generator"] --> TXNS["50-Event Transaction Benchmark"]
+        SEED --> CASES["10 Synthetic Pilot-Pack Cases"]
+        SEED --> STUB["Versioned Guidance Stub Registry"]
+    end
+
+    subgraph Harness["2. Measurement Harness (Local Stack)"]
+        TXNS --> INGEST["Intake Throughput (~36 req/s)"]
+        INGEST --> SCORING["Feature & Triage Scoring (~6.5 ms/event)"]
+        SCORING --> DASH["Dashboard Query (p50 ~28 ms)"]
+        CASES --> PACKS["Pilot Pack Prep (p50 ~177.5 ms)"]
+        STUB --> GROUND["Citation Grounding Check (Score: 1.0)"]
+    end
+
+    subgraph Gates["3. Verification & Budget Quality Gates"]
+        PACKS --> SUITE["288 Unit + 86 Integration Tests"]
+        GROUND --> SUITE
+        SUITE --> SPEND["$0.00 Provider Spend (Mock Mode)"]
+        SPEND --> SMOKE["Smoke & Preflight Verification (Passed)"]
+    end
+
+    classDef default fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:12px;
+    classDef highlight fill:#1b232b,stroke:#d97706,color:#f5c17a,font-weight:bold;
+    classDef verified fill:#1d2a1f,stroke:#4ade80,color:#86efac,font-weight:bold;
+
+    class GROUND,SPEND,SMOKE verified;
+    class INGEST,SCORING highlight;
+```
+
 ## Metrics and definitions
 
 | Metric | Definition |
