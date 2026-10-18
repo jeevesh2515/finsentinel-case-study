@@ -48,6 +48,7 @@ flowchart LR
 - **Retrieved text to application**: retrieved regulatory text is untrusted input and is treated as data, never instructions.
 - **Generated text to control plane**: generated prose cannot mutate state, tiers, or citations.
 - **System to human**: disposition and escalation are human transitions, recorded with reviewer identity.
+- **Public edge showcase to enterprise core**: the public showcase runs entirely client-side on Vercel's edge network with mocked synthetic data. There is no network connectivity, API route, or credential link between the public edge showcase and the private enterprise engine or database.
 
 ## High-level threats and design responses
 
@@ -61,6 +62,7 @@ flowchart LR
 | Elevation of privilege | Read and write permissions checked per route; the review state machine is the only path between statuses; terminal states have no out-edges |
 | Prompt injection via retrieved content | Deterministic tier primacy; citations must match verified sources or the request fails closed; injected instructions in retrieved text cannot become application behaviour |
 | Unsupported regulatory claims | Grounding validation: a draft referencing an unknown or mismatched citation is rejected rather than shown; weak evidence produces abstention |
+| Exposure of private core via public demo | Air-gapped delivery: the public showcase executes purely in the visitor's browser using mocked synthetic data and has no backend network route or credentials |
 
 ## Residual risks (honest list)
 

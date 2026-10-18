@@ -51,6 +51,40 @@ The public architecture is documented in [ARCHITECTURE.md](ARCHITECTURE.md) and 
 
 ![FinSentinel Public Architecture Diagram](assets/architecture-public.svg)
 
+### System architecture and delivery
+
+FinSentinel couples a local-first enterprise backend engine with a client-side public showcase deployed to Vercel's edge network via automated CI/CD:
+
+```mermaid
+flowchart LR
+    subgraph Enterprise["Enterprise Core (Docker / Local)"]
+        direction TB
+        API["FastAPI Engine & PG16 RLS"]
+        WORKER["Outbox Worker & ML Scorer"]
+        DASH["Analyst Review Dashboard"]
+        API --> WORKER --> DASH
+    end
+
+    subgraph Delivery["Automated CI/CD (GitHub Actions)"]
+        direction TB
+        CI["CI: check.yml (288 tests)"]
+        CD["CD: deploy.yml (Vercel CLI)"]
+        CI --> CD
+    end
+
+    subgraph Edge["Public Showcase (Vercel)"]
+        direction TB
+        WEB["Next.js 15 Operations Cockpit"]
+        SIM["Interactive AML Sandbox"]
+        WEB --> SIM
+    end
+
+    Delivery -->|Auto-deploys| Edge
+
+    classDef box fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:11px;
+    class API,WORKER,DASH,CI,CD,WEB,SIM box;
+```
+
 ### End-to-end processing pipeline
 
 ```mermaid
@@ -126,9 +160,15 @@ No private dashboard screenshots are published. The poster below is an illustrat
 
 ![FinSentinel Illustrative Mock Investigation Interface](assets/demo-poster.svg)
 
-A live interactive client-side showcase is accessible at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app). It runs in pure client-side mock mode with synthetic data and does not connect to private backend systems.
+A live interactive client-side showcase is accessible at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app). It operates in pure client-side mock mode with synthetic data and zero connection to private backend systems. Key public showcase capabilities include:
 
-Fully synthetic machine-readable examples live in [examples/](examples/synthetic-transaction.json): a transaction record, a case summary with evidence references, and a benchmark summary with provenance.
+- **AML Operations Cockpit:** Interactive review interface built with Next.js 15, React 19, and Tailwind CSS.
+- **Statutory Precedent Gauges:** Visual coverage dials illustrating regulatory citation alignment for FCA SYSC § 6.3 (UK Systems & Controls), FinCEN 31 CFR § 1020.320 (US SAR Filing), and MLR 2017 Reg 33 (Enhanced Due Diligence).
+- **Kinetic Text Reveals:** Cryptographic decryption scramble animation verifying SHA-256 case digest integrity on the client side.
+- **Structuring Topology Graph:** 60 FPS HTML5 Canvas graph rendering smurfing and structuring typologies across multi-hop payment accounts.
+- **Synthetic AML Sandbox:** Interactive scenario loader demonstrating triage priority shifts and evidence pack generation with synthetic payloads.
+
+Fully synthetic machine-readable examples live in [examples/synthetic-transaction.json](examples/synthetic-transaction.json): a transaction record, a case summary with evidence references, and a benchmark summary with provenance.
 
 ## 10. Technical stack
 
@@ -139,8 +179,8 @@ Stack disclosed at a category level (safe to publish):
 - **Orchestration:** LangGraph-based multi-step workflow with checkpointing.
 - **Scoring:** scikit-learn classical anomaly scoring over versioned history-based features.
 - **Evaluation and quality:** pytest (unit, integration, contract, concurrency, replay, citation, and injection tests), Ruff, a documentation-claims gate.
-- **Delivery:** Docker Compose local stack, Terraform infrastructure-as-code definition (validated, never deployed), CI checks.
-- **Web showcase:** Next.js 15 / React 19 static landing page with a client-side-only interactive sandbox hosted at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app).
+- **Delivery:** Docker Compose local stack, GitHub Actions continuous integration and continuous deployment (`check.yml` and `deploy.yml`) auto-deploying to Vercel on `main`, Terraform infrastructure-as-code definition (validated, never deployed).
+- **Web showcase:** Next.js 15 / React 19 static operations cockpit with real-time statutory dials (FCA SYSC § 6.3, FinCEN 31 CFR § 1020.320, MLR 2017 Reg 33), 60 FPS HTML5 structuring topology canvas, client-side Web Crypto digests, and interactive AML sandbox at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app).
 
 Exact configuration, prompts, schemas, thresholds, and operational details are not published.
 

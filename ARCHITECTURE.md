@@ -4,6 +4,40 @@ This document explains how FinSentinel is designed at a level that is safe for a
 
 ![FinSentinel Public Architecture Diagram](assets/architecture-public.svg)
 
+## System architecture and delivery
+
+FinSentinel couples a local-first enterprise backend engine with a client-side public showcase deployed to Vercel's edge network via automated CI/CD:
+
+```mermaid
+flowchart LR
+    subgraph Enterprise["Enterprise Core (Docker / Local)"]
+        direction TB
+        API["FastAPI Engine & PG16 RLS"]
+        WORKER["Outbox Worker & ML Scorer"]
+        DASH["Analyst Review Dashboard"]
+        API --> WORKER --> DASH
+    end
+
+    subgraph Delivery["Automated CI/CD (GitHub Actions)"]
+        direction TB
+        CI["CI: check.yml (288 tests)"]
+        CD["CD: deploy.yml (Vercel CLI)"]
+        CI --> CD
+    end
+
+    subgraph Edge["Public Showcase (Vercel)"]
+        direction TB
+        WEB["Next.js 15 Operations Cockpit"]
+        SIM["Interactive AML Sandbox"]
+        WEB --> SIM
+    end
+
+    Delivery -->|Auto-deploys| Edge
+
+    classDef box fill:#101418,stroke:#3a4750,color:#e8edf2,font-size:11px;
+    class API,WORKER,DASH,CI,CD,WEB,SIM box;
+```
+
 ## Component responsibilities
 
 | Component | Responsibility | Public-safe note |
@@ -16,6 +50,8 @@ This document explains how FinSentinel is designed at a level that is safe for a
 | Draft assembly | Produces review-ready investigation material constrained to supplied evidence | Generated text cannot change a risk tier or invent a citation |
 | Human review | Reviewer claims a case and records an explicit transition with identity and notes | No autonomous final action exists anywhere in the pipeline |
 | Audit and export | Append-only audit trail; controlled investigation-pack export (JSON and print HTML) | Tamper-evidence for reviewers, not administrator-proof immutability |
+| Automated CI/CD | Runs unit, integration, and typecheck gates on commit; deploys public showcase on main | GitHub Actions executes check.yml and deploy.yml with Vercel CLI |
+| Public Edge Showcase | Client-side sandbox and operations cockpit hosted at finsentinel-chi.vercel.app | Air-gapped from backend core; executes purely in browser with mock synthetic data |
 
 ## Data flow
 
@@ -87,6 +123,7 @@ flowchart LR
 4. **Retrieved text to application.** Retrieved regulatory text is treated as untrusted data. Injected instructions inside retrieved content cannot become application behaviour; tests assert this.
 5. **Generated text to control plane.** Generated prose is display material with a fixed schema. It cannot alter tiers, invent citations, or trigger external action.
 6. **System to human.** The review boundary is explicit: a named reviewer performs the state transition. The system has no code path that files, escalates externally, or contacts a regulator.
+7. **Public edge showcase to enterprise core.** The public showcase is hosted on Vercel's edge network and runs entirely within the visitor's browser with synthetic data. It has no network route, API keys, or database access into the enterprise core, maintaining an air gap between public demonstration and private systems.
 
 ## Human-review boundary
 
