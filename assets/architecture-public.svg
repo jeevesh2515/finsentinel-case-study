@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" width="1040" height="560" role="img" aria-labelledby="title desc">
   <title id="title">FinSentinel public architecture (simplified)</title>
-  <desc id="desc">Simplified public diagram: synthetic input flows through validation and tenant checks, tenant-scoped storage, triage, evidence retrieval, cited draft, human review, and audit with controlled export. Implementation detail is deliberately omitted.</desc>
+  <desc id="desc">Simplified public diagram: synthetic input flows through validation and tenant checks, tenant-scoped storage, triage, evidence retrieval, evidence-bound draft, human review, and audit with controlled export. Implementation detail is deliberately omitted.</desc>
   <style>
     .box { fill: #101418; stroke: #3a4750; stroke-width: 1.5; }
     .accent { fill: #1b232b; stroke: #d97706; stroke-width: 1.5; }
@@ -38,11 +38,11 @@
 
   <rect x="740" y="250" width="200" height="74" rx="10" class="box"/>
   <text x="756" y="282" class="label" font-size="14.5">Evidence retrieval</text>
-  <text x="756" y="303" class="sub">Patterns + cited guidance</text>
+  <text x="756" y="303" class="sub">Patterns + policy context</text>
 
   <rect x="500" y="250" width="200" height="74" rx="10" class="box"/>
   <text x="516" y="282" class="label" font-size="14.5">Cited draft material</text>
-  <text x="516" y="303" class="sub">Grounded or abstains</text>
+  <text x="516" y="303" class="sub">Hash match or abstain</text>
 
   <rect x="260" y="250" width="200" height="74" rx="10" class="human"/>
   <text x="276" y="282" class="label" font-size="14.5">Human review</text>

@@ -5,6 +5,41 @@
   "tenant_id": "SYNTH-TENANT-A",
   "triage_priority": "illustrative-high",
   "triage_note": "Triage priority orders review work. It is not a fraud probability and not a production operating point.",
+  "customer_profile_variance": [
+    {
+      "signal": "declared_turnover",
+      "illustrative_value": "observed turnover above the declared monthly band",
+      "strength": "context"
+    },
+    {
+      "signal": "corridor",
+      "illustrative_value": "destination corridor not present in the declared corridor list",
+      "strength": "moderate"
+    },
+    {
+      "signal": "cdd_freshness",
+      "illustrative_value": "CDD refresh date outside the configured review window",
+      "strength": "context"
+    }
+  ],
+  "primary_case_drivers": [
+    {
+      "kind": "structuring-band",
+      "summary": "Illustrative deposits sit just below a reporting band across a short window.",
+      "strength": "strong"
+    },
+    {
+      "kind": "corridor-mismatch",
+      "summary": "The payment uses a corridor the synthetic customer did not declare.",
+      "strength": "moderate"
+    },
+    {
+      "kind": "cdd-stale",
+      "summary": "The synthetic profile shows an out-of-date CDD refresh.",
+      "strength": "context"
+    }
+  ],
+  "drivers_note": "Drivers explain an illustrative case. They never change the triage tier and are not a finding of wrongdoing.",
   "evidence": [
     {
       "kind": "prior-transaction-pattern",
@@ -12,10 +47,10 @@
       "provenance": "synthetic-generator"
     },
     {
-      "kind": "guidance-citation",
-      "summary": "Illustrative citation placeholder to a stub regulatory registry entry.",
+      "kind": "citation-hash",
+      "summary": "Illustrative citation placeholder resolved against a versioned synthetic stub registry entry.",
       "provenance": "stub-registry",
-      "citation_verified": true
+      "citation_hash_verified": true
     }
   ],
   "draft_status": "for-human-review-only",

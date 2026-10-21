@@ -48,7 +48,7 @@ flowchart LR
 - **Retrieved text to application**: retrieved regulatory text is untrusted input and is treated as data, never instructions.
 - **Generated text to control plane**: generated prose cannot mutate state, tiers, or citations.
 - **System to human**: disposition and escalation are human transitions, recorded with reviewer identity.
-- **Public edge showcase to enterprise core**: the public showcase runs entirely client-side on Vercel's edge network with mocked synthetic data. There is no network connectivity, API route, or credential link between the public edge showcase and the private enterprise engine or database.
+- **Public edge showcase to enterprise core**: the public deployment serves synthetic fixture data by default. An optional server-side bridge can read a local API when a server-only token is configured. The token never reaches the browser, the upstream call times out, and every failure returns synthetic data with an explicit reason. The bridge is disabled in the public deployment and is not a public data path.
 
 ## High-level threats and design responses
 
@@ -62,16 +62,18 @@ flowchart LR
 | Elevation of privilege | Read and write permissions checked per route; the review state machine is the only path between statuses; terminal states have no out-edges |
 | Prompt injection via retrieved content | Deterministic tier primacy; citations must match verified sources or the request fails closed; injected instructions in retrieved text cannot become application behaviour |
 | Unsupported regulatory claims | Grounding validation: a draft referencing an unknown or mismatched citation is rejected rather than shown; weak evidence produces abstention |
-| Exposure of private core via public demo | Air-gapped delivery: the public showcase executes purely in the visitor's browser using mocked synthetic data and has no backend network route or credentials |
+| Exposure of private core via public demo | Synthetic-by-default delivery: the public showcase serves fixture data unless an operator configures a server-only bridge; no bearer token is exposed to the browser and every bridge failure degrades to synthetic data |
 
 ## Residual risks (honest list)
 
 1. **Administrator access.** Audit records are append-only by application privilege, but a database administrator can rewrite rows. The design provides tamper-evidence, not immutability. External anchoring is undecided.
 2. **Restart resilience.** Workflow resume position does not currently survive a process restart; durable processing effects are idempotent, which bounds the impact. Durable checkpointing is future work.
-3. **Regulatory retrieval is demonstrative.** The recorded gates use a small stub registry rather than a complete, verified regulatory corpus; retrieved guidance is illustrative, not a legal reference.
+3. **Regulatory retrieval is demonstrative.** The recorded gates use a small synthetic stub registry rather than a complete, verified regulatory corpus; retrieved text is illustrative, not a legal reference.
 4. **Provider spend control is single-process.** It does not survive restart or span instances. Paid provider access is disabled in the recorded configuration, so the current blast radius is zero.
-5. **Local identity scope.** The recorded configuration uses a local identity model suitable for a loopback demonstration. Production identity, transport security, and internet-facing abuse controls are separate scopes with their own review.
+5. **Local identity scope.** The recorded configuration uses a local identity model suitable for a loopback demonstration. Production identity (OIDC, MFA), transport security, and internet-facing abuse controls are separate scopes with their own review.
 6. **No independent security testing.** The threat model is a design audit backed by the project's own tests. There has been no external penetration test or code audit.
+7. **Audit integrity limit.** Append-only is enforced by database privilege, not by a hash chain or WORM storage. A database administrator with sufficient rights can rewrite rows. Hash chaining and an external export path are planned, not shipped.
+8. **Optional bridge configuration.** The public showcase bridge is safe only while no token is configured or the token remains server-side. A misconfiguration that exposes a token or widens the upstream timeout changes the risk posture and must be reviewed before enabling it for any customer-facing use.
 
 ## Excluded from this document
 

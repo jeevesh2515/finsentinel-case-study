@@ -18,7 +18,7 @@ Out of scope:
 
 ## Reporting
 
-Do **not** open a public issue containing secret values or personal data. Use the contact details in [README.md](README.md) — currently the GitHub profile; further channels are added by the author before this repository is published — and describe the location (file and line) without reproducing the value.
+Do **not** open a public issue containing secret values or personal data. Use the contact route in [README.md](README.md) — the author's GitHub profile — and describe the location (file and line) without reproducing the value.
 
 ## What the repository does to protect itself
 
@@ -27,4 +27,4 @@ Do **not** open a public issue containing secret values or personal data. Use th
 
 ## History
 
-This repository is initialised with a single documentation commit. It does not import the private product's git history, branches, or code.
+This repository contains documentation revisions only. It does not import the private product's git history, branches, or code.

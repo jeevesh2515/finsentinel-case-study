@@ -1,69 +1,93 @@
 {
-  "notice": "SYNTHETIC AND FABRICATED. This summary reproduces only figures recorded in the private project's dated evaluation evidence, re-stated for public release. It is illustrative documentation, not a performance claim.",
+  "notice": "SYNTHETIC AND FABRICATED. This illustrative summary reproduces only figures recorded in the private project's dated evaluation evidence, re-stated for public release. It is documentation, not a performance claim.",
   "data_classification": "synthetic-illustrative-only",
   "environment": "single Apple Silicon macOS development machine, local containers, mock model provider, paid provider access disabled",
   "disclaimer": "These results describe the synthetic test setup and do not predict real-world fraud-detection performance.",
   "metrics": [
     {
       "name": "test_suite",
-      "value": { "unit_passing": 288, "integration_passing": 86 },
-      "date": "2026-10-17",
-      "gate": "local re-verification sweep",
+      "value": {
+        "unit_passing": 404,
+        "integration_passing": 95,
+        "playwright_e2e": 4,
+        "vitest_route_tests": 3
+      },
+      "date": "2026-10-21",
+      "gate": "local verification and web gate",
       "run_type": "local-synthetic",
-      "limitations": "Local suite only; not production proof. Counts at the 2026-10-12 pilot-kit gate were 285 unit / 86 integration."
+      "limitations": "Local suites only; not production proof. The 2026-10-17 record was 288 unit / 86 integration, and the 2026-10-12 pilot-kit gate was 285 / 86."
     },
     {
-      "name": "ingestion_throughput",
-      "value": { "requests_per_second": 36.13, "latency_p50_ms": 26.5, "events": 50 },
-      "date": "2026-10-07",
-      "gate": "P7 evaluation",
+      "name": "ingestion",
+      "value": { "p50_ms": 28.62, "p95_ms": 31.61, "events": 100, "events_per_second": 137.3 },
+      "date": "2026-10-20",
+      "gate": "post-acceptance performance sweep",
       "run_type": "local-mock-synthetic",
-      "limitations": "Single run, warm caches, no concurrent load. 2026-10-17 re-run measured 35.55 req/s."
+      "limitations": "Single machine, warm caches, no concurrent load. The 2026-10-07 record measured 36.13 req/s and is historical."
     },
     {
       "name": "consumer_scoring",
-      "value": { "ms_per_event": 6.49 },
-      "date": "2026-10-07",
-      "gate": "P7 evaluation",
+      "value": { "p50_ms_per_event": 6.27 },
+      "date": "2026-10-20",
+      "gate": "post-acceptance performance sweep",
       "run_type": "local-mock-synthetic",
-      "limitations": "2026-10-17 re-run measured 5.28 ms/event."
-    },
-    {
-      "name": "pipeline_execution",
-      "value": { "steps": 5, "ms_per_event": 13.12 },
-      "date": "2026-10-07",
-      "gate": "P7 evaluation",
-      "run_type": "local-mock-synthetic",
-      "limitations": "2026-10-17 re-run measured 14.88 ms/event."
+      "limitations": "Background claim-to-commit path on synthetic events; no provider calls."
     },
     {
       "name": "dashboard_overview_p50",
-      "value": { "ms": 27.97 },
-      "date": "2026-10-07",
-      "gate": "P7 evaluation",
+      "value": { "ms": 27.56 },
+      "date": "2026-10-20",
+      "gate": "post-acceptance performance sweep",
       "run_type": "local-mock-synthetic",
-      "limitations": "Internal 15 ms aspiration recorded as unmet; 100 ms working budget met."
+      "limitations": "The internal 15 ms aspiration remains unmet; the 100 ms working budget is met."
     },
     {
-      "name": "pilot_pack_preparation_p50",
-      "value": { "ms": 177.5, "max_ms": 188.0, "cases": 10, "cited_cases": 7, "abstained_cases": 3 },
-      "date": "2026-10-09",
-      "gate": "P9 pilot-pack evaluation",
+      "name": "pilot_pack_preparation",
+      "value": {
+        "p50_ms": 43.86,
+        "p95_ms": 45.51,
+        "p99_ms": 53.25,
+        "packs": 50
+      },
+      "date": "2026-10-20",
+      "gate": "post-acceptance latency benchmark",
       "run_type": "local-mock-synthetic",
-      "limitations": "Recorded pack target marked unmet. 2026-10-17 re-run measured p50 243.7 ms."
+      "limitations": "Guarded by a benchmark that fails when pack p95 reaches 60 ms. The earlier 177.5 ms and 243.7 ms figures are superseded."
     },
     {
-      "name": "citation_grounding",
+      "name": "pilot_pack_evaluation",
+      "value": {
+        "cases": 10,
+        "cited_cases": 7,
+        "abstained_cases": 3,
+        "p50_ms": 76.7,
+        "max_ms": 79.5
+      },
+      "date": "2026-10-20",
+      "gate": "10-case pilot-pack evaluation",
+      "run_type": "local-mock-synthetic",
+      "limitations": "Synthetic cases across triage bands; citation verification covers 7 cited cases against a stub registry."
+    },
+    {
+      "name": "citation_hash_verification",
       "value": { "verified_over_total": 1.0 },
-      "date": "2026-10-09",
-      "gate": "P9 pilot-pack evaluation",
+      "date": "2026-10-20",
+      "gate": "10-case pilot-pack evaluation",
       "run_type": "local-mock-synthetic",
-      "limitations": "Covers 7 cited cases against a stub registry; does not measure guidance applicability or currency."
+      "limitations": "Measures content-hash match against versioned synthetic stubs, not legal applicability, currency, or regulatory coverage."
+    },
+    {
+      "name": "model_feature_vector",
+      "value": { "features": 18, "history_features": 12, "transaction_intrinsics": 3, "missingness_flags": 3 },
+      "date": "2026-10-20",
+      "gate": "model v2 regression",
+      "run_type": "local-synthetic",
+      "limitations": "Synthetic IsolationForest baseline; no authorised labelled evaluation exists."
     },
     {
       "name": "provider_spend_usd",
       "value": { "spend": 0.0 },
-      "date": "2026-10-17",
+      "date": "2026-10-21",
       "gate": "all recorded gates",
       "run_type": "local-mock-synthetic",
       "limitations": "Mock provider with paid access disabled; says nothing about cost under real provider usage."

@@ -52,6 +52,7 @@ REQUIRED_FILES = (
     "THREAT-MODEL.md",
     "LIMITATIONS.md",
     "DISCLOSURE.md",
+    "DECISIONS.md",
     "OWNERSHIP-AND-LICENSE.md",
     "DOCUMENTATION-LICENSE.md",
     "SECURITY.md",
@@ -73,6 +74,7 @@ ALLOWED_TOP_LEVEL = {
     "THREAT-MODEL.md",
     "LIMITATIONS.md",
     "DISCLOSURE.md",
+    "DECISIONS.md",
     "OWNERSHIP-AND-LICENSE.md",
     "DOCUMENTATION-LICENSE.md",
     "SECURITY.md",
@@ -187,6 +189,8 @@ BANNED_PHRASES = (
     "100% " + "accurate",
     "regulatory " + "compliant",
     "fraud detection " + "accuracy",
+    "statutory " + "precedent",
+    "coverage " + "dial",
 )
 
 README_REQUIRED_PHRASES = (

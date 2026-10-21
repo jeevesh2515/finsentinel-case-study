@@ -33,14 +33,14 @@
   <text x="74" y="342" class="sub">Two similar synthetic events, same synthetic corridor</text>
 
   <rect x="60" y="370" width="420" height="60" rx="8" fill="#0d1116" stroke="#2b363e"/>
-  <text x="74" y="394" class="mono">09:33  guidance citation (stub registry)</text>
+  <text x="74" y="394" class="mono">09:33  citation lookup (stub registry)</text>
   <text x="74" y="414" class="sub">Cited chunk verified; abstention when weak evidence</text>
 
   <text x="60" y="466" class="sub">Generated material: for review only. Cannot change the tier or invent citations.</text>
   <rect x="60" y="480" width="420" height="72" rx="8" fill="#0d1116" stroke="#2b363e"/>
   <text x="74" y="504" class="mono">draft: evidence summary + chronology</text>
   <text x="74" y="524" class="mono">citations: 1 verified / 0 invented</text>
-  <text x="74" y="544" class="sub">grounding check: passed (synthetic registry)</text>
+  <text x="74" y="544" class="sub">citation hash check: passed (synthetic registry)</text>
 
   <rect x="530" y="150" width="470" height="430" rx="12" class="panel"/>
   <text x="550" y="182" class="label">Review actions</text>

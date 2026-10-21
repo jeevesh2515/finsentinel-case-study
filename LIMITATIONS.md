@@ -17,16 +17,32 @@ Published so that nothing in this case study can be mistaken for more than it is
 - **No customer, pilot, or revenue claim.** No customer has used the product; no paid pilot, deployment, or market validation exists.
 - **No performance guarantee.** Benchmarks are single-machine, synthetic, and non-contractual.
 
+## Product scope
+
+- **No alert ingestion.** The current intake accepts transaction events and runs the project's own anomaly model. A buyer who already runs transaction monitoring gets alerts from that system. Accepting those alerts directly is the next planned capability, not a shipped one.
+- **No sanctions, PEP, or adverse-media screening.** The customer profile stores declared turnover, corridors, CDD refresh date, and a risk rating. It does not screen against watchlists.
+- **No graph or network analysis across customers.** Similar-case retrieval is transaction-level and bounded.
+- **No FX.** Multi-currency amounts are not normalised into a single reporting currency.
+- **No SAR filing format.** The pack is JSON and print-ready HTML, not a goAML or regulator-specific submission file.
+- **No notifications.** There is no email, webhook, or case-management integration. Reviewers poll the dashboard.
+
+## Identity and access
+
+- **Local identity only.** The recorded configuration uses scrypt bearer tokens and, in pilot mode, an HttpOnly cookie session. There is no OIDC/SAML SSO, MFA, SCIM provisioning, or self-service user administration.
+- **Coarse roles.** Permissions are read/write-oriented. There is no separate MLRO, team-lead, or delegated-approval role model.
+- **Admin tooling is CLI-based.** Tenant creation, user creation, licence issuance, export, and purge are operator commands, not authenticated HTTP endpoints.
+
 ## Model and provider dependencies
 
 - The recorded configuration runs a **mock model provider with paid provider access disabled**; therefore no claims about model quality, accuracy, or cost under real usage are possible.
+- The model is an IsolationForest baseline trained on synthetic typologies. It has not been evaluated on authorised labelled data.
 - A real provider integration, if enabled later, introduces vendor dependency, pricing exposure, latency, and drift in model behaviour. A spend guard and redaction path exist, but running cost and quality have never been measured.
-- Generated prose is constrained to supplied evidence, but language-model output remains variable; the design compensates with abstention and grounding checks, not with a correctness guarantee.
+- Generated prose is constrained to supplied evidence, but language-model output remains variable; the design compensates with abstention and hash checks, not with a correctness guarantee.
 
 ## Retrieval and citations
 
-- Regulatory retrieval in the recorded gates uses a **small stub registry**, not a complete or verified regulatory corpus, and simple matching rather than embedding search.
-- Citation grounding proves that a draft's citations match a known source chunk; it does not prove the cited guidance is applicable to the case, current, or complete.
+- Retrieval uses a **small versioned synthetic stub registry**, not a complete or verified regulatory corpus, and deterministic token overlap rather than embedding search.
+- Citation hash verification proves that a draft's citation matches a known stub by content hash; it does not prove the cited guidance is applicable to the case, current, or complete.
 - Weak evidence yields abstention; how often abstention is the right outcome on real material is unknown.
 
 ## Human review
@@ -40,10 +56,19 @@ Published so that nothing in this case study can be mistaken for more than it is
 - Audit is tamper-evident, not administrator-proof. See [THREAT-MODEL.md](THREAT-MODEL.md).
 - Local authentication is demonstration-grade: it is not production identity, and the local stack is not hardened for the internet.
 - Workflow checkpoints are in-process in the recorded configuration; restart durability of resume position is a known gap (idempotent effects limit the impact).
-- Infrastructure was written and statically validated but never deployed; operational behaviour (recovery, alerting, backups under real load) is untested outside the local harness.
+- The cloud backend was never deployed. Terraform was written and statically validated; operational behaviour under real load is untested.
+- Backups are scripted and tested on a local database, not scheduled production backups with point-in-time recovery.
+- Tenant export and purge are operator scripts. Completeness of the export across every table is a release check, not yet an automated invariant.
 - No external penetration test or independent security review has been performed.
+
+## Evidence tiers
+
+- All published model and latency evidence is tier E1: synthetic or mock execution, non-transferable to a customer environment.
+- The pre-registered model evaluation protocol describes how to reach E2, but it has not been executed.
+- No third party has reproduced any result.
 
 ## This repository
 
 - This is documentation, not the product. Design summaries omit implementation detail on purpose, so a reader cannot reproduce exact system behaviour from this repository alone.
 - Examples are fabricated for illustration. The mock UI poster is not a screenshot.
+- The live showcase is synthetic and static by default. It is not the product.

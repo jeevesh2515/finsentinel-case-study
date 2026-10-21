@@ -17,7 +17,7 @@
 
 - Every example in [examples/](examples/synthetic-transaction.json) is fabricated for illustration and marked as synthetic.
 - [assets/demo-poster.svg](assets/demo-poster.svg) is a hand-drawn mock interface, not a screenshot of any real system.
-- An interactive public showcase is available at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app). It operates entirely client-side with synthetic fixture data and does not connect to any private backend or store customer data.
+- An interactive public showcase is available at [https://finsentinel-chi.vercel.app](https://finsentinel-chi.vercel.app). It serves synthetic fixture data by default. An optional server-side bridge can read a local API when a server-only token is configured; the token never reaches the browser, every failure degrades to synthetic data, and the bridge is disabled in the public deployment.
 - No customer names, records, contact details, transaction data, alerts, case material, or personal data appear in this repository.
 - No credentials, secrets, connection strings, or configuration values are included or implied.
 
@@ -37,4 +37,4 @@ If you believe this repository contains material that should not be public — a
 
 ## Contact
 
-For authorised professional discussion about this case study (recruiters, hiring managers, interviewers), please use the contact details in [README.md](README.md) — currently the GitHub profile; LinkedIn and email are added by the author before this repository is published. Requests for access to the private product source are declined, politely.
+For authorised professional discussion about this case study (recruiters, hiring managers, interviewers), please use the contact route in [README.md](README.md): the author's GitHub profile. Requests for access to the private product source are declined, politely.
