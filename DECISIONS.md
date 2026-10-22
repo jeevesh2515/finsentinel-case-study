@@ -99,3 +99,27 @@ These are summaries, not the private architecture decision records. They exist s
 **Consequence.** The demo can show real responses without making the public edge a proxy for private data. Route tests pin the no-token, timeout and non-leak behaviour.
 
 **Cost.** The live path is not exercised in public. The bridge is an operator feature, not a product feature, and must be reviewed before any customer-facing use.
+
+---
+
+## D-009 — Customer risk profiles provide context, not automated scoring overrides
+
+**Context.** Transaction anomaly scores indicate statistical deviation, not illegality. Analysts evaluate suspicious activity against the customer's known KYC/CDD baseline (declared turnover, expected corridors, risk rating).
+
+**Decision.** Store customer KYC/CDD baselines in a tenant-isolated entity with row-level security. Compute deterministic variance metrics (turnover multiples, corridor mismatches, stale CDD) and surface them as visual context in the triage queue and investigation pack. Profile variance never silently overrides the model's anomaly score.
+
+**Consequence.** Analysts see vital customer background directly within FinSentinel, reducing context switching without blurring the line between statistical anomaly and compliance context.
+
+**Cost.** Customer profiles must be kept in sync by the tenant; out-of-date baselines create misleading variance indicators.
+
+---
+
+## D-010 — External alerts open cases, but the tier stays the model's
+
+**Context.** Regulated institutions already run transaction monitoring systems with existing alert generation. Forcing them to replace existing detectors before using FinSentinel prevents adoption.
+
+**Decision.** Ingest external alerts idempotently on `(tenant_id, source_system, external_alert_id)` and link them to primary trigger transactions. An alert opens a case at any priority, but the case tier strictly reflects FinSentinel's deterministic model tier. The external severity is preserved solely as external context.
+
+**Consequence.** FinSentinel operates as an investigation-acceleration layer over existing detection infrastructure without compromising deterministic scoring invariants or triage predictability.
+
+**Cost.** Trigger transactions must be ingested before or alongside alerts, requiring coordination between customer telemetry feeds.

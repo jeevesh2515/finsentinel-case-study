@@ -150,7 +150,7 @@ The public diagrams are intentionally simplified. They communicate system intent
 
 Current recorded gates (all local, synthetic, mock-mode):
 
-- **404 unit tests + 95 integration tests + 4 Playwright E2E + 3 Vitest route tests** passing on 2026-10-21;
+- **434 unit tests + 106 integration tests + 7 Playwright E2E + 5 Vitest tests** passing on 2026-10-22;
 - **ingest p50 28.62 ms**, **scoring p50 6.27 ms at 137.3 events/s**, and **dashboard p50 27.56 ms** in a 100-event benchmark on 2026-10-20;
 - **investigation-pack assembly p50 43.86 ms, p95 45.51 ms, p99 53.25 ms** across 50 synthetic packs, with a CI-adjacent benchmark that fails if pack p95 reaches 60 ms;
 - the 10-case pilot harness measured **p50 76.7 ms** and met its target; the older 177.5 ms figure is historical;
@@ -200,10 +200,10 @@ These are the gaps I would close before asking a compliance team to pay for the 
 
 | # | Gap | Status | What closing it means |
 | --- | --- | --- | --- |
-| 1 | **Alert ingestion** | In progress (2026-10-22) | Accept alerts from the customer's existing monitoring system and open a case for the primary trigger transaction. Idempotent per tenant, source system and external alert id. The case tier stays FinSentinel's deterministic model tier; the external severity is stored as context only. If the trigger transaction is not scored yet, the alert waits and the case opens when scoring completes. This is the difference between "a second detector" and "a workflow layer". |
+| 1 | **Alert ingestion** | Closed (2026-10-22) | Accept alerts from the customer's existing monitoring system and open a case for the primary trigger transaction. Idempotent per tenant, source system and external alert id. The case tier stays FinSentinel's deterministic model tier; the external severity is stored as context only. If the trigger transaction is not scored yet, the alert waits and the case opens when scoring completes. This is the difference between "a second detector" and "a workflow layer". |
 | 2 | **SSO and user administration** | Gap | OIDC login, MFA, role assignment, revocation, and an audit of admin actions. Bearer tokens and a CLI are fine for a demo, not for procurement. |
 | 3 | **Audit integrity beyond application privilege** | Gap | Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim. |
-| 4 | **Data lifecycle completeness** | Gap | Tenant export and purge must cover customer profiles as well as transactions, scores, reviews and audit rows. |
+| 4 | **Data lifecycle completeness** | Closed (2026-10-22) | Tenant export and purge now cover all tenant tables, including customer profiles and external alerts with an automated completeness invariant test. |
 | 5 | **External validation** | Gap | A penetration test, a paper trail for the threat model, and the pre-registered model evaluation on authorised labelled data. Until then, all model evidence is synthetic and non-transferable. |
 | 6 | **Durable workflow and spend state** | Gap | Workflow resume position and provider spend control are in-process today; both need shared, durable state before more than one worker runs. |
 
@@ -240,12 +240,12 @@ Fully synthetic machine-readable examples live in [examples/synthetic-transactio
 Stack disclosed at a category level (safe to publish):
 
 - **Language and API:** Python 3.12, FastAPI, Pydantic.
-- **Data:** PostgreSQL 16 with row-level security, SQLAlchemy, six Alembic migrations. Retrieval uses deterministic token overlap plus indexed SQL pre-filters, not vector search.
+- **Data:** PostgreSQL 16 with row-level security, SQLAlchemy, seven Alembic migrations. Retrieval uses deterministic token overlap plus indexed SQL pre-filters, not vector search.
 - **Orchestration:** LangGraph 0.6.11 five-node workflow with in-process checkpointing.
 - **Scoring:** scikit-learn IsolationForest over 18 versioned features, with a committed artifact manifest and SHA-256 validation.
 - **Evaluation and quality:** pytest (unit, integration, contract, concurrency, replay, citation, cold-start and injection tests), Ruff, Vitest, Playwright, a documentation-claims gate, and a public-safety validator.
 - **Delivery:** Docker Compose local stack and a customer-hosted pilot compose file; GitHub Actions `check.yml` and `security.yml`; Vercel Git integration for the static showcase (preview per pull request, production on `main`); Terraform infrastructure-as-code validated but never deployed.
-- **Web showcase:** Next.js 15 / React 19 / Tailwind v4, light and dark themes, 130 kB First Load JS, 4 Playwright E2E and 3 Vitest route tests.
+- **Web showcase:** Next.js 15 / React 19 / Tailwind v4, Quiet Ledger design system, light and dark themes, 115 kB First Load JS, 7 Playwright E2E and 5 Vitest tests.
 
 Exact configuration, prompts, schemas, thresholds, and operational details are not published.
 
