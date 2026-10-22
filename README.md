@@ -48,7 +48,7 @@ FinSentinel is a single-maintainer project. I directed scope, phase gates, and a
 - designed transaction validation and ingestion boundaries, including strict money, timestamp, and reference handling, with replay `200` versus conflict `409` semantics;
 - implemented tenant-scoped persistence and access controls, with server-derived tenant identity rather than client-supplied headers, PostgreSQL row-level security, and negative cross-tenant tests;
 - built a transactional outbox with a runnable consumer daemon: bounded retries, terminal failure, explicit replay, and fail-closed model artifact loading;
-- built the feature and triage path, including 18 strict prior-event features with a no-lookahead proof, and kept triage priority separate from any claim of fraud probability;
+- built the feature and triage path, including an 18-feature vector (strict prior-event history features with a no-lookahead proof, plus transaction intrinsics), and kept triage priority separate from any claim of fraud probability;
 - added a customer risk profile and variance engine: declared turnover, corridor mismatches, CDD staleness, and a customer risk rating, all tenant-scoped and audited;
 - built the evidence and citation path, including abstention when evidence is weak, and renamed the public metric to citation *hash verification* to avoid implying regulatory grounding;
 - assembled the investigation workflow as an explicit five-node pipeline with failure and replay semantics;
@@ -160,11 +160,33 @@ These results describe the synthetic test setup and do not predict real-world fr
 
 ## 7. Two bugs worth discussing
 
-Portfolio case studies usually show the finished system. The two defects below are more informative than the feature list.
+Portfolio case studies usually show the finished system. The two defects below are more informative than the feature list. Both were found by me on 2026-10-20 during an end-to-end audit of the private repository, and both passed every existing test before they were found. The evidence pointers name records in the private repository; they are listed so a reviewer can ask for them in an interview.
 
-**The O(n²) retrieval defect.** The similar-case ranking recomputed the per-feature pool mean and standard deviation once per candidate per feature. Results were correct, so tests passed; latency grew with tenant history. Hoisting the statistics out of the loop kept the distances identical and cut investigation-pack assembly from **1,070 ms to ~52 ms p50** at a tenant volume of 582 transactions. The fix is regression-locked by two tests, and the pack benchmark now fails on a p95 threshold.
+### 7.1 The O(n²) retrieval defect
 
-**The cold-start model flaw.** The first feature set had no amount, channel, or account-age signal, so a first-time sender always scored low no matter how suspicious the payment looked. The v2 vector added `account_age_days`, `is_cash_channel`, `log_amount`, and three missingness flags: 18 features in total. Regression tests now pin an ordinary first-time domestic payment at MEDIUM, a cold cash payment at MEDIUM, and cash structuring and international spikes at CRITICAL. The model remains a synthetic baseline, not a validated detector.
+| Step | What happened |
+| --- | --- |
+| **Problem** | Investigation-pack assembly took **1,070 ms p50** at a synthetic tenant of 582 transactions, while scoring a single event took single-digit milliseconds. The pack is on the path of every case a reviewer opens. |
+| **How it was found** | A latency benchmark across ingest, scoring and pack assembly. The pack number was out of line with every other stage, so I read the similar-case retrieval step it calls. |
+| **Root cause** | The ranking function standardised each feature against the candidate pool, but recomputed the pool mean and standard deviation once per candidate per feature. Cost grew with the square of tenant history. Results were correct, so correctness tests could not see it. |
+| **Fix** | Compute the pool statistics once and reuse them, which leaves every distance numerically identical. Then bound the pool: above 1,000 prior rows, indexed sender and channel pre-filters pick at most 1,000 candidates before features are computed, so cost no longer grows with tenant volume. |
+| **Regression lock** | One test asserts distances still equal the original per-candidate formula; one ranks 2,000 candidates under a time ceiling; an integration test pins the 1,000-row cap; the pack benchmark fails if p95 reaches 60 ms. |
+| **Result** | Pack assembly **1,070 ms to ~52 ms p50** at the same 582-transaction tenant after the hoist. After bounding, the 50-pack benchmark records **43.86 ms p50 / 45.51 ms p95**. Synthetic data, one local machine. |
+
+Evidence: the private production-readiness review of 2026-10-20 (section 2.3), the retrieval unit tests, and the latency benchmark records listed in [EVALUATION.md](EVALUATION.md).
+
+### 7.2 The cold-start feature defect
+
+| Step | What happened |
+| --- | --- |
+| **Problem** | Under feature set `p3-features-v1`, every sender with no prior history scored **HIGH (0.6429)**, however ordinary the payment. An ordinary first payment and a suspicious one landed in the same queue position. |
+| **How it was found** | Building a one-command demo with an "ordinary baseline" scenario. The baseline case kept arriving as HIGH, and only seeding 30 days of prior history moved it. |
+| **Root cause** | The v1 vector held 15 values: 12 prior-history features (velocity counts, sums, mean, z-score, counterparty and corridor flags, inter-arrival time) and 3 missingness flags. It had nothing about the transaction itself. With no history, every cold-start event produced the same vector, so it got the same score. |
+| **Fix** | `p3-features-v2` adds three transaction-intrinsic features: `account_age_days` (clipped to 10 years and scaled to 0–1), `is_cash_channel`, and `log_amount` (log10 of 1 + amount / 1,000). The 3 missingness flags were already in v1 and are unchanged. Total: 18 features. The synthetic generator gained cash channels and a cold-start cohort, and the model was retrained with a new versioned artifact. |
+| **Regression lock** | A feature-contract test pins the version and the 18-feature order. Five cold-start tests run the committed model: an ordinary first-time domestic payment and an ordinary first cash payment must stay below HIGH; a cash structuring burst and a sudden international spike must stay HIGH or above. |
+| **Result** | Ordinary first-time domestic payment **MEDIUM 0.3982**; ordinary first cash payment **MEDIUM 0.5374**; cash structuring burst and international spike **CRITICAL 1.0000**. These are triage priorities on synthetic data. The model remains a synthetic baseline, not a validated detector. |
+
+Evidence: the private feature module and its version history, the cold-start and feature-contract test files, and the production-readiness review of 2026-10-20.
 
 ## 8. Threat model
 
@@ -176,11 +198,14 @@ The honest residual list includes: audit is tamper-evident but a database admini
 
 These are the gaps I would close before asking a compliance team to pay for the product. They are listed here because a case study that only shows strengths is not useful to a reviewer.
 
-1. **Alert ingestion.** Accept the customer's existing alerts (alert id, rule or scenario, customer, linked transactions) and open a case directly, with FinSentinel's own score as optional context. This is the difference between "a second detector" and "a workflow layer".
-2. **SSO and user administration.** OIDC login, MFA, role assignment, revocation, and an audit of admin actions. Bearer tokens and a CLI are fine for a demo, not for procurement.
-3. **Audit integrity beyond application privilege.** Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim.
-4. **Data lifecycle completeness.** Tenant export and purge must cover customer profiles as well as transactions, scores, reviews and audit rows.
-5. **External validation.** A penetration test, a paper trail for the threat model, and the pre-registered model evaluation on authorised labelled data. Until then, all model evidence is synthetic and non-transferable.
+| # | Gap | Status | What closing it means |
+| --- | --- | --- | --- |
+| 1 | **Alert ingestion** | In progress (2026-10-22) | Accept alerts from the customer's existing monitoring system and open a case for the primary trigger transaction. Idempotent per tenant, source system and external alert id. The case tier stays FinSentinel's deterministic model tier; the external severity is stored as context only. If the trigger transaction is not scored yet, the alert waits and the case opens when scoring completes. This is the difference between "a second detector" and "a workflow layer". |
+| 2 | **SSO and user administration** | Gap | OIDC login, MFA, role assignment, revocation, and an audit of admin actions. Bearer tokens and a CLI are fine for a demo, not for procurement. |
+| 3 | **Audit integrity beyond application privilege** | Gap | Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim. |
+| 4 | **Data lifecycle completeness** | Gap | Tenant export and purge must cover customer profiles as well as transactions, scores, reviews and audit rows. |
+| 5 | **External validation** | Gap | A penetration test, a paper trail for the threat model, and the pre-registered model evaluation on authorised labelled data. Until then, all model evidence is synthetic and non-transferable. |
+| 6 | **Durable workflow and spend state** | Gap | Workflow resume position and provider spend control are in-process today; both need shared, durable state before more than one worker runs. |
 
 Public-safe decision notes are in [DECISIONS.md](DECISIONS.md).
 

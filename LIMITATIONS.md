@@ -19,7 +19,7 @@ Published so that nothing in this case study can be mistaken for more than it is
 
 ## Product scope
 
-- **No alert ingestion.** The current intake accepts transaction events and runs the project's own anomaly model. A buyer who already runs transaction monitoring gets alerts from that system. Accepting those alerts directly is the next planned capability, not a shipped one.
+- **No alert ingestion.** The current intake accepts transaction events and runs the project's own anomaly model. A buyer who already runs transaction monitoring gets alerts from that system. Accepting those alerts directly is in progress as of 2026-10-22, not a shipped capability.
 - **No sanctions, PEP, or adverse-media screening.** The customer profile stores declared turnover, corridors, CDD refresh date, and a risk rating. It does not screen against watchlists.
 - **No graph or network analysis across customers.** Similar-case retrieval is transaction-level and bounded.
 - **No FX.** Multi-currency amounts are not normalised into a single reporting currency.
