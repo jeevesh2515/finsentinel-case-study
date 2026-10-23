@@ -55,7 +55,12 @@ FinSentinel is a single-maintainer project. I directed scope, phase gates, and a
 - added human-review lifecycle states, reviewer identity, row-level locking, an append-only audit trail, and plain-English case drivers that explain a case without changing its tier;
 - created synthetic evaluation harnesses, a 10-case pilot-pack evaluation, a release preflight check, and a fail-closed public-safety validator for documentation;
 - built an offline HMAC licensing path, a tenant export/purge lifecycle, an admin CLI, CSV import, and a customer-hosted pilot kit;
-- authored the threat model, operational limitations, a pre-registered model evaluation protocol, and phase-by-phase evidence records.
+- built external alert ingestion (`POST /api/v1/alerts`) with reconciliation sweeps that heal scoring concurrency races;
+- implemented a cold-start warm-up engine (ADR-013) that backfills history and holds sparse senders without triggering alert floods;
+- added tenant-owned policy manuals with SHA-256 tamper-evident integrity and fail-closed lexical citations (ADR-012);
+- implemented enterprise OIDC SSO with PKCE for Microsoft Entra ID, server-side sessions, derived CSRF tokens, and immediate database revocation (ADR-014);
+- proved network boundary containment through AST static analysis, global test socket guards, and operating-system level sandbox denial runs;
+- authored the threat model, operational limitations, commercial assurance status matrix, a pre-registered model evaluation protocol, and phase-by-phase evidence records.
 
 ## 4. Public architecture
 
@@ -150,7 +155,7 @@ The public diagrams are intentionally simplified. They communicate system intent
 
 Current recorded gates (all local, synthetic, mock-mode):
 
-- **434 unit tests + 106 integration tests + 7 Playwright E2E + 5 Vitest tests** passing on 2026-10-22;
+- **584 unit tests + 185 integration tests + 7 Playwright E2E + 5 Vitest tests** passing on 2026-10-23;
 - **ingest p50 28.62 ms**, **scoring p50 6.27 ms at 137.3 events/s**, and **dashboard p50 27.56 ms** in a 100-event benchmark on 2026-10-20;
 - **investigation-pack assembly p50 43.86 ms, p95 45.51 ms, p99 53.25 ms** across 50 synthetic packs, with a CI-adjacent benchmark that fails if pack p95 reaches 60 ms;
 - the 10-case pilot harness measured **p50 76.7 ms** and met its target; the older 177.5 ms figure is historical;
@@ -201,11 +206,14 @@ These are the gaps I would close before asking a compliance team to pay for the 
 | # | Gap | Status | What closing it means |
 | --- | --- | --- | --- |
 | 1 | **Alert ingestion** | Closed (2026-10-22) | Accept alerts from the customer's existing monitoring system and open a case for the primary trigger transaction. Idempotent per tenant, source system and external alert id. The case tier stays FinSentinel's deterministic model tier; the external severity is stored as context only. If the trigger transaction is not scored yet, the alert waits and the case opens when scoring completes. This is the difference between "a second detector" and "a workflow layer". |
-| 2 | **SSO and user administration** | Gap | OIDC login, MFA, role assignment, revocation, and an audit of admin actions. Bearer tokens and a CLI are fine for a demo, not for procurement. |
-| 3 | **Audit integrity beyond application privilege** | Gap | Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim. |
-| 4 | **Data lifecycle completeness** | Closed (2026-10-22) | Tenant export and purge now cover all tenant tables, including customer profiles and external alerts with an automated completeness invariant test. |
-| 5 | **External validation** | Gap | A penetration test, a paper trail for the threat model, and the pre-registered model evaluation on authorised labelled data. Until then, all model evidence is synthetic and non-transferable. |
-| 6 | **Durable workflow and spend state** | Gap | Workflow resume position and provider spend control are in-process today; both need shared, durable state before more than one worker runs. |
+| 2 | **SSO and identity** | Implemented on branch (2026-10-23) | OIDC login with PKCE for Microsoft Entra ID, server-side sessions (`fs_session`), derived CSRF tokens, and immediate database-checked revocation. User administration remains CLI-only (no HTTP admin screen yet). |
+| 3 | **Cold-start alert flood** | Implemented on branch (2026-10-22) | Multi-state warm-up engine (ADR-013) that backfills and scores historical data without opening cases, holding sparse senders until volume criteria are satisfied. |
+| 4 | **Customer policy citations** | Implemented on branch (2026-10-22) | Customer-owned AML procedure manuals with database-enforced immutability, SHA-256 tamper verification, and fail-closed lexical citation (ADR-012). |
+| 5 | **Data lifecycle completeness** | Closed (2026-10-22) | Tenant export and purge now cover all tenant tables, including customer profiles, alerts, warm-up records, and policy sections, with an automated completeness invariant test. |
+| 6 | **Network egress containment** | Implemented on branch (2026-10-23) | Static AST import scanner pinning `auth/oidc.py` as the only outbound module, loopback test socket guard, and OS-level egress denial run (`sandbox-exec`). Docker container network denial remains unverified. |
+| 7 | **External assurance** | Open / roadmap | Clearly separated across 13 external assurance requirements: no pen test, SOC 2, ISO 27001, commercial SLA, cyber insurance, or legal DPA yet. Transparent roadmap prioritized by cost. |
+| 8 | **Audit integrity beyond application privilege** | Gap | Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim. |
+| 9 | **Durable workflow and spend state** | Gap | Workflow resume position and provider spend control are in-process today; both need shared, durable state before more than one worker runs. |
 
 Public-safe decision notes are in [DECISIONS.md](DECISIONS.md).
 
@@ -240,7 +248,7 @@ Fully synthetic machine-readable examples live in [examples/synthetic-transactio
 Stack disclosed at a category level (safe to publish):
 
 - **Language and API:** Python 3.12, FastAPI, Pydantic.
-- **Data:** PostgreSQL 16 with row-level security, SQLAlchemy, seven Alembic migrations. Retrieval uses deterministic token overlap plus indexed SQL pre-filters, not vector search.
+- **Data:** PostgreSQL 16 with row-level security, SQLAlchemy, ten Alembic migrations. Retrieval uses deterministic token overlap plus indexed SQL pre-filters, not vector search.
 - **Orchestration:** LangGraph 0.6.11 five-node workflow with in-process checkpointing.
 - **Scoring:** scikit-learn IsolationForest over 18 versioned features, with a committed artifact manifest and SHA-256 validation.
 - **Evaluation and quality:** pytest (unit, integration, contract, concurrency, replay, citation, cold-start and injection tests), Ruff, Vitest, Playwright, a documentation-claims gate, and a public-safety validator.

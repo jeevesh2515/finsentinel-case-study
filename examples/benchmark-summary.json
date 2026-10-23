@@ -7,15 +7,15 @@
     {
       "name": "test_suite",
       "value": {
-        "unit_passing": 404,
-        "integration_passing": 95,
-        "playwright_e2e": 4,
-        "vitest_route_tests": 3
+        "unit_passing": 584,
+        "integration_passing": 185,
+        "playwright_e2e": 7,
+        "vitest_route_tests": 5
       },
-      "date": "2026-10-21",
-      "gate": "local verification and web gate",
+      "date": "2026-10-23",
+      "gate": "local verification, network boundary, and web gate",
       "run_type": "local-synthetic",
-      "limitations": "Local suites only; not production proof. The 2026-10-17 record was 288 unit / 86 integration, and the 2026-10-12 pilot-kit gate was 285 / 86."
+      "limitations": "Local suites only; not production proof. The 2026-10-22 record was 434 unit / 106 integration, the 2026-10-21 record was 404 unit / 95 integration, and the 2026-10-17 record was 288 unit / 86 integration."
     },
     {
       "name": "ingestion",

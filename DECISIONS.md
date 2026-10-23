@@ -123,3 +123,64 @@ These are summaries, not the private architecture decision records. They exist s
 **Consequence.** FinSentinel operates as an investigation-acceleration layer over existing detection infrastructure without compromising deterministic scoring invariants or triage predictability.
 
 **Cost.** Trigger transactions must be ingested before or alongside alerts, requiring coordination between customer telemetry feeds.
+
+---
+
+## D-011 — Two-tier pilot governance separates synthetic evaluation from real data
+
+**Context.** Enterprise buyers require hands-on evaluation before purchase, but sharing production transaction records creates severe compliance, GDPR, and data protection risks.
+
+**Decision.** Offer a strict two-tier pilot model. Tier A is an immediate, supervised walkthrough using synthetic data only, requiring zero legal agreements. Tier B allows sanitised replay of customer historical alerts, but is strictly gated on a signed Data Processing Agreement (DPA) and legal review.
+
+**Consequence.** Prospects can validate investigation workflows without legal delay, while real customer data is never touched without signed regulatory safeguards.
+
+**Cost.** Tier A cannot measure detection rates on the customer's proprietary typologies.
+
+---
+
+## D-012 — Tenant-owned policy content enforces database-level immutability
+
+**Context.** Financial institutions maintain proprietary AML procedural manuals and risk tolerances. Compliance copilots that allow runtime policy editing or hallucinate outdated rules create regulatory liability.
+
+**Decision.** Allow tenants to upload internal policy sections, but revoke database `UPDATE` permissions on the `content` column for the application runtime. Compute a SHA-256 hash on upload and verify it on every read. Implement fail-closed exclusion rules in the retriever: draft, superseded, expired, and review-overdue sections are excluded before matching.
+
+**Consequence.** Even a compromised application tier cannot tamper with policy text, and direct database modifications immediately trigger hash-mismatch abstentions.
+
+**Cost.** Lexical token matching may miss differently phrased internal procedures compared to vector embeddings.
+
+---
+
+## D-013 — Warm-up mode prevents cold-start alert floods
+
+**Context.** Unsupervised anomaly detection algorithms flag first-time accounts as high risk due to the absence of historical baseline data, causing severe operational fatigue when onboarding new tenants.
+
+**Decision.** Introduce a multi-state tenant lifecycle (`not_configured`, `warming_up`, `live`). In warm-up mode, backfilled transactions are scored to calibrate prior-event feature distributions without opening review cases. Transactions with sparse sender histories are held in dedicated records, while true critical outliers route to an exceptions list. The tenant automatically transitions to live once volume and span criteria are fulfilled.
+
+**Consequence.** Eliminates day-one alert flooding while ensuring legitimate critical risks are not lost during historical backfill.
+
+**Cost.** Historical data backfill is a required onboarding prerequisite before a tenant goes live.
+
+---
+
+## D-014 — Enterprise OIDC identity with immediate database revocation
+
+**Context.** Enterprise procurement requires Single Sign-On (SSO) with IdP-enforced MFA (such as Microsoft Entra ID). Pasted bearer tokens or stateless JWT session cookies create immediate revocation risks when an investigator is offboarded.
+
+**Decision.** Implement OIDC authorization code flow with PKCE and RS256 token validation. Store sessions server-side with rolling idle (30m) and absolute (12h) timeouts using opaque cookie identifiers. Derive CSRF tokens statelessly from session secrets. Check session and membership permissions directly against PostgreSQL on every HTTP request.
+
+**Consequence.** Offboarding an analyst terminates access on their very next request, with MFA fully delegated to the customer's corporate identity provider.
+
+**Cost.** Database lookups occur on every authenticated request, and administrator user provisioning remains CLI-driven.
+
+---
+
+## D-015 — Multi-layered network boundary verification & transparent assurance
+
+**Context.** Financial institutions strictly prohibit transaction data from leaving on-premises environments, yet marketing claims of "air-gapped" or "secure" often lack empirical verification.
+
+**Decision.** Establish a three-layer boundary: static AST analysis pinning the OIDC client as the only network-capable backend code, global test socket guards intercepting non-loopback calls, and operating-system sandbox runs with outbound network interfaces disabled. Reconcile commercial assurance around a strict 6-status vocabulary, plainly listing uncompleted third-party certifications (pen tests, SOC 2, ISO 27001).
+
+**Consequence.** Technical buyers receive empirical proof of network containment and total transparency regarding security posture.
+
+**Cost.** Formal third-party certifications remain future roadmap items funded by commercial pilots.
+

@@ -34,7 +34,7 @@ flowchart LR
 
     subgraph Gates["3. Verification gates"]
         direction TB
-        V1["404 unit + 95 integration"]
+        V1["584 unit + 185 integration"]
         V2["Citation hash verification: 1.0"]
         V3["Spend: $0.00 (mock mode)"]
     end
@@ -76,14 +76,14 @@ The model evaluation protocol that defines the path from E1 to E2 is pre-registe
 
 All results below are from a single Apple Silicon macOS development machine running the local stack in mock-only mode. They describe the synthetic test setup and do **not** predict real-world fraud-detection performance.
 
-### 1. Test suite (2026-10-22)
+### 1. Test suite (2026-10-23)
 
-- **Value:** 434 unit tests, 106 integration tests, 7 Playwright E2E tests, and 5 Vitest tests passing.
+- **Value:** 584 unit tests, 185 integration tests, 7 Playwright E2E tests, and 5 Vitest tests passing.
 - **Dataset scope:** synthetic fixtures, disposable test databases, and a production web build.
-- **Test date:** 2026-10-22.
-- **Identifier:** post-acceptance local verification and web gate; internal commits omitted (source repository is private).
+- **Test date:** 2026-10-23.
+- **Identifier:** post-acceptance local verification, network boundary, and web gate; internal commits omitted (source repository is private).
 - **Run type:** local, synthetic.
-- **Limitations:** a green local suite is not production proof, uptime, or a substitute for independent security testing. Counts grow over time; the 2026-10-21 record was 404 unit / 95 integration, the 2026-10-17 record was 288 unit / 86 integration, and the 2026-10-12 pilot-kit gate was 285 / 86.
+- **Limitations:** a green local suite is not production proof, uptime, or a substitute for independent security testing. Counts grow over time; the 2026-10-22 record was 434 unit / 106 integration, the 2026-10-21 record was 404 unit / 95 integration, the 2026-10-17 record was 288 unit / 86 integration, and the 2026-10-12 pilot-kit gate was 285 / 86.
 
 ### 2. Pipeline benchmark (2026-10-20)
 

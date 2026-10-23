@@ -19,7 +19,7 @@ Published so that nothing in this case study can be mistaken for more than it is
 
 ## Product scope
 
-- **No alert ingestion.** The current intake accepts transaction events and runs the project's own anomaly model. A buyer who already runs transaction monitoring gets alerts from that system. Accepting those alerts directly is in progress as of 2026-10-22, not a shipped capability.
+- **Alert ingestion boundary.** The intake accepts external alerts via `POST /api/v1/alerts` (ADR-010) linked to transaction events. However, external alerts do not override the deterministic model tier; the external severity is stored as context only.
 - **No sanctions, PEP, or adverse-media screening.** The customer profile stores declared turnover, corridors, CDD refresh date, and a risk rating. It does not screen against watchlists.
 - **No graph or network analysis across customers.** Similar-case retrieval is transaction-level and bounded.
 - **No FX.** Multi-currency amounts are not normalised into a single reporting currency.
@@ -28,9 +28,9 @@ Published so that nothing in this case study can be mistaken for more than it is
 
 ## Identity and access
 
-- **Local identity only.** The recorded configuration uses scrypt bearer tokens and, in pilot mode, an HttpOnly cookie session. There is no OIDC/SAML SSO, MFA, SCIM provisioning, or self-service user administration.
-- **Coarse roles.** Permissions are read/write-oriented. There is no separate MLRO, team-lead, or delegated-approval role model.
-- **Admin tooling is CLI-based.** Tenant creation, user creation, licence issuance, export, and purge are operator commands, not authenticated HTTP endpoints.
+- **OIDC SSO and CLI administration.** OIDC authorization code with PKCE against Microsoft Entra ID and server-side sessions (`fs_session`) is implemented on branch (ADR-014). However, user administration, tenant provisioning, licence issuance, export, and purge remain operator CLI commands; there is no self-service HTTP admin UI or SCIM user provisioning.
+- **Coarse roles.** Permissions are read/write-oriented (`ingest`, `analyst`, `admin-reader`). There is no separate MLRO, team-lead, or delegated-approval role model.
+- **Single IdP tested.** OIDC integration has been validated against a stub IdP; real Entra tenant verification and Google Workspace remain future work.
 
 ## Model and provider dependencies
 
