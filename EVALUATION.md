@@ -34,7 +34,7 @@ flowchart LR
 
     subgraph Gates["3. Verification gates"]
         direction TB
-        V1["584 unit + 185 integration"]
+        V1["585 unit + 186 integration"]
         V2["Citation hash verification: 1.0"]
         V3["Spend: $0.00 (mock mode)"]
     end
@@ -78,7 +78,7 @@ All results below are from a single Apple Silicon macOS development machine runn
 
 ### 1. Test suite (2026-10-23)
 
-- **Value:** 584 unit tests, 185 integration tests, 7 Playwright E2E tests, and 5 Vitest tests passing.
+- **Value:** 585 unit tests, 186 integration tests, 7 Playwright E2E tests, and 5 Vitest tests passing.
 - **Dataset scope:** synthetic fixtures, disposable test databases, and a production web build.
 - **Test date:** 2026-10-23.
 - **Identifier:** post-acceptance local verification, network boundary, and web gate; internal commits omitted (source repository is private).

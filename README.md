@@ -58,8 +58,8 @@ FinSentinel is a single-maintainer project. I directed scope, phase gates, and a
 - built external alert ingestion (`POST /api/v1/alerts`) with reconciliation sweeps that heal scoring concurrency races;
 - implemented a cold-start warm-up engine (ADR-013) that backfills history and holds sparse senders without triggering alert floods;
 - added tenant-owned policy manuals with SHA-256 tamper-evident integrity and fail-closed lexical citations (ADR-012);
-- implemented enterprise OIDC SSO with PKCE for Microsoft Entra ID, server-side sessions, derived CSRF tokens, and immediate database revocation (ADR-014);
-- proved network boundary containment through AST static analysis, global test socket guards, and operating-system level sandbox denial runs;
+- implemented enterprise OIDC SSO with PKCE (Microsoft Entra ID first), server-side sessions, derived CSRF tokens, and immediate database revocation (ADR-014), tested only against a stub identity provider, with no real Entra tenant;
+- built network-boundary evidence: AST static analysis, global test socket guards, and host-process runs under operating-system egress denial (Docker runtime egress is not verified);
 - authored the threat model, operational limitations, commercial assurance status matrix, a pre-registered model evaluation protocol, and phase-by-phase evidence records.
 
 ## 4. Public architecture
@@ -155,7 +155,7 @@ The public diagrams are intentionally simplified. They communicate system intent
 
 Current recorded gates (all local, synthetic, mock-mode):
 
-- **584 unit tests + 185 integration tests + 7 Playwright E2E + 5 Vitest tests** passing on 2026-10-23;
+- **585 unit tests + 186 integration tests + 7 Playwright E2E + 5 Vitest tests** passing on 2026-10-23, plus pipeline verification 29/29, pilot smoke 6/6 and release preflight 4/4 (10 migrations);
 - **ingest p50 28.62 ms**, **scoring p50 6.27 ms at 137.3 events/s**, and **dashboard p50 27.56 ms** in a 100-event benchmark on 2026-10-20;
 - **investigation-pack assembly p50 43.86 ms, p95 45.51 ms, p99 53.25 ms** across 50 synthetic packs, with a CI-adjacent benchmark that fails if pack p95 reaches 60 ms;
 - the 10-case pilot harness measured **p50 76.7 ms** and met its target; the older 177.5 ms figure is historical;
@@ -206,11 +206,11 @@ These are the gaps I would close before asking a compliance team to pay for the 
 | # | Gap | Status | What closing it means |
 | --- | --- | --- | --- |
 | 1 | **Alert ingestion** | Closed (2026-10-22) | Accept alerts from the customer's existing monitoring system and open a case for the primary trigger transaction. Idempotent per tenant, source system and external alert id. The case tier stays FinSentinel's deterministic model tier; the external severity is stored as context only. If the trigger transaction is not scored yet, the alert waits and the case opens when scoring completes. This is the difference between "a second detector" and "a workflow layer". |
-| 2 | **SSO and identity** | Implemented on branch (2026-10-23) | OIDC login with PKCE for Microsoft Entra ID, server-side sessions (`fs_session`), derived CSRF tokens, and immediate database-checked revocation. User administration remains CLI-only (no HTTP admin screen yet). |
-| 3 | **Cold-start alert flood** | Implemented on branch (2026-10-22) | Multi-state warm-up engine (ADR-013) that backfills and scores historical data without opening cases, holding sparse senders until volume criteria are satisfied. |
-| 4 | **Customer policy citations** | Implemented on branch (2026-10-22) | Customer-owned AML procedure manuals with database-enforced immutability, SHA-256 tamper verification, and fail-closed lexical citation (ADR-012). |
+| 2 | **SSO and identity** | Implemented on an unmerged PR branch (2026-10-23) | OIDC login with PKCE (Microsoft Entra ID first), server-side sessions (`fs_session`), derived CSRF tokens, and immediate database-checked revocation. Tested only against a stub IdP; no real Entra tenant, Google Workspace deferred, MFA delegated to the IdP. User administration remains CLI-only. |
+| 3 | **Cold-start alert flood** | Implemented on an unmerged PR branch (2026-10-22) | Multi-state warm-up engine (ADR-013) that backfills and scores historical data without opening cases, holding sparse senders until volume criteria are satisfied. |
+| 4 | **Customer policy citations** | Implemented on an unmerged PR branch (2026-10-22) | Customer-owned AML procedure manuals with database-enforced immutability, SHA-256 tamper verification, and fail-closed lexical citation (ADR-012). |
 | 5 | **Data lifecycle completeness** | Closed (2026-10-22) | Tenant export and purge now cover all tenant tables, including customer profiles, alerts, warm-up records, and policy sections, with an automated completeness invariant test. |
-| 6 | **Network egress containment** | Implemented on branch (2026-10-23) | Static AST import scanner pinning `auth/oidc.py` as the only outbound module, loopback test socket guard, and OS-level egress denial run (`sandbox-exec`). Docker container network denial remains unverified. |
+| 6 | **Network egress containment** | Implemented on an unmerged PR branch (2026-10-23) | Static AST import scanner pinning `auth/oidc.py` as the only outbound module, loopback test socket guard, and host-process runs under macOS `sandbox-exec` egress denial. Docker runtime egress is not verified. |
 | 7 | **External assurance** | Open / roadmap | Clearly separated across 13 external assurance requirements: no pen test, SOC 2, ISO 27001, commercial SLA, cyber insurance, or legal DPA yet. Transparent roadmap prioritized by cost. |
 | 8 | **Audit integrity beyond application privilege** | Gap | Hash chaining and an export path to a SIEM or WORM store, so "append-only" is not only a database privilege claim. |
 | 9 | **Durable workflow and spend state** | Gap | Workflow resume position and provider spend control are in-process today; both need shared, durable state before more than one worker runs. |
@@ -218,6 +218,16 @@ These are the gaps I would close before asking a compliance team to pay for the 
 Public-safe decision notes are in [DECISIONS.md](DECISIONS.md).
 
 ## 10. Product status
+
+### Project status: closed at pre-pilot milestone (2026-10-23)
+
+FinSentinel is frozen at the current pre-pilot portfolio milestone. No new architecture or feature work should be started until there is external customer, security, or hiring evidence that changes this decision.
+
+- **Complete:** the core phases and pilot kit and alert ingestion (ADR-010) are merged. Post-core work (warm-up mode, tenant-owned policy evidence, OIDC with Entra ID first, network-boundary evidence, commercial-assurance status document) is on a stacked feature branch opened as a PR for review, not merged. A closeout pass regenerated the SBOM, made the OIDC client refuse HTTP redirects, closed a pilot token-rule gap in one error handler, and corrected stale documentation.
+- **Externally unverified:** no pen test, SOC 2, ISO 27001, customer pilot, buyer interviews, real-data evaluation, production backend deployment, SLA, insurance, or legal review. OIDC is tested only against a stub IdP. Docker runtime egress is not verified. The frontend is a static synthetic showcase.
+- **Reopen criteria:** a real design partner; a pilot that needs a missing control; a blocking security-review finding; a hiring process that needs a deeper demonstration; or a production deployment becoming a real business requirement.
+
+Network standing: the local pilot configuration is designed to run without outbound application calls, with paid providers disabled by default. Host-process network-denial evidence passed, but Docker runtime egress and independent external verification remain outstanding.
 
 - A private commercial product prototype, developed as a personal project.
 - This public repository is a documentation case study only.

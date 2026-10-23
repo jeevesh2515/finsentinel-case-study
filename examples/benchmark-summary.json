@@ -7,8 +7,8 @@
     {
       "name": "test_suite",
       "value": {
-        "unit_passing": 584,
-        "integration_passing": 185,
+        "unit_passing": 585,
+        "integration_passing": 186,
         "playwright_e2e": 7,
         "vitest_route_tests": 5
       },

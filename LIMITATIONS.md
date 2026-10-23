@@ -14,6 +14,7 @@ Published so that nothing in this case study can be mistaken for more than it is
 - **No production fraud-detection claim.** The anomaly score is a triage priority used to order review work, not a probability of fraud, and not a production operating point.
 - **No autonomous regulatory filing.** The system has no code path that files a report, blocks a payment, or contacts a regulator. Those actions are, by design, outside the product.
 - **No compliance certification.** Nothing here claims regulatory approval, certification, or legal advice. The product is not a substitute for legal, compliance, or MLRO judgement.
+- **Branch status.** Post-core work (warm-up, policy evidence, OIDC, network-boundary evidence) is on an unmerged PR branch.
 - **No customer, pilot, or revenue claim.** No customer has used the product; no paid pilot, deployment, or market validation exists.
 - **No performance guarantee.** Benchmarks are single-machine, synthetic, and non-contractual.
 
@@ -28,9 +29,10 @@ Published so that nothing in this case study can be mistaken for more than it is
 
 ## Identity and access
 
-- **OIDC SSO and CLI administration.** OIDC authorization code with PKCE against Microsoft Entra ID and server-side sessions (`fs_session`) is implemented on branch (ADR-014). However, user administration, tenant provisioning, licence issuance, export, and purge remain operator CLI commands; there is no self-service HTTP admin UI or SCIM user provisioning.
+- **OIDC SSO and CLI administration.** OIDC authorization code with PKCE (Microsoft Entra ID first) and server-side sessions (`fs_session`) is implemented on an unmerged PR branch (ADR-014). MFA is delegated to the IdP. User administration, tenant provisioning, licence issuance, export, and purge remain operator CLI commands; there is no GUI user admin or SCIM user provisioning.
 - **Coarse roles.** Permissions are read/write-oriented (`ingest`, `analyst`, `admin-reader`). There is no separate MLRO, team-lead, or delegated-approval role model.
-- **Single IdP tested.** OIDC integration has been validated against a stub IdP; real Entra tenant verification and Google Workspace remain future work.
+- **Stub IdP only.** OIDC integration has been tested only against a stub IdP. Real Entra tenant validation and Google Workspace support remain future work.
+- **No per-tenant calibration.** Triage thresholds are global; per-tenant calibration has not been built.
 
 ## Model and provider dependencies
 
@@ -60,6 +62,16 @@ Published so that nothing in this case study can be mistaken for more than it is
 - Backups are scripted and tested on a local database, not scheduled production backups with point-in-time recovery.
 - Tenant export and purge are operator scripts. Completeness of the export across every table is a release check, not yet an automated invariant.
 - No external penetration test or independent security review has been performed.
+- **Network egress.** The local pilot configuration is designed to run without outbound application calls, with paid providers disabled by default. Host-process network-denial evidence passed, but Docker runtime egress and independent external verification remain outstanding.
+- **No signed images or registry.** Container images are not signed and no registry publishing pipeline exists.
+
+## Not yet done (external)
+
+- No SOC 2 or ISO 27001 attestation.
+- No customer pilot, buyer interviews, or real-data evaluation.
+- No production backend deployment, SLA, or cyber insurance.
+- No billing or managed SaaS offering.
+- No regulatory-source licensing or legal review; the citation registry is synthetic.
 
 ## Evidence tiers
 

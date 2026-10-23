@@ -168,7 +168,7 @@ These are summaries, not the private architecture decision records. They exist s
 
 **Decision.** Implement OIDC authorization code flow with PKCE and RS256 token validation. Store sessions server-side with rolling idle (30m) and absolute (12h) timeouts using opaque cookie identifiers. Derive CSRF tokens statelessly from session secrets. Check session and membership permissions directly against PostgreSQL on every HTTP request.
 
-**Consequence.** Offboarding an analyst terminates access on their very next request, with MFA fully delegated to the customer's corporate identity provider.
+**Consequence.** Offboarding an analyst terminates access on their very next request, with MFA delegated to the customer's identity provider. Tested only against a stub IdP; no real Entra tenant, Google Workspace deferred. Implemented on an unmerged PR branch.
 
 **Cost.** Database lookups occur on every authenticated request, and administrator user provisioning remains CLI-driven.
 
@@ -178,9 +178,9 @@ These are summaries, not the private architecture decision records. They exist s
 
 **Context.** Financial institutions strictly prohibit transaction data from leaving on-premises environments, yet marketing claims of "air-gapped" or "secure" often lack empirical verification.
 
-**Decision.** Establish a three-layer boundary: static AST analysis pinning the OIDC client as the only network-capable backend code, global test socket guards intercepting non-loopback calls, and operating-system sandbox runs with outbound network interfaces disabled. Reconcile commercial assurance around a strict 6-status vocabulary, plainly listing uncompleted third-party certifications (pen tests, SOC 2, ISO 27001).
+**Decision.** Establish a three-layer boundary: static AST analysis pinning the OIDC client as the only network-capable backend code, global test socket guards intercepting non-loopback calls, and host-process runs under macOS `sandbox-exec` egress denial. Reconcile commercial assurance around a strict 6-status vocabulary, plainly listing uncompleted third-party certifications (pen tests, SOC 2, ISO 27001).
 
-**Consequence.** Technical buyers receive empirical proof of network containment and total transparency regarding security posture.
+**Consequence.** Technical buyers receive host-process network-denial evidence and a plain statement of security posture. Docker runtime egress is not verified.
 
 **Cost.** Formal third-party certifications remain future roadmap items funded by commercial pilots.
 

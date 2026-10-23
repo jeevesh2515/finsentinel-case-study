@@ -54,7 +54,7 @@ Delivery facts:
 | Intake API | Accepts versioned transaction events, enforces strict validation, returns explicit replay/conflict semantics | Contract shape and error policy are described; exact schemas are not published |
 | Alert ingestion | Ingests external monitoring alerts idempotently and links them to trigger transactions | Opens cases at model tier; external severity stored as context |
 | Identity and tenant checks | Resolves the authenticated principal, membership, and permissions; derives tenant identity server-side | Client-supplied tenant headers are never trusted |
-| Enterprise OIDC & sessions | OIDC authorization code flow with PKCE for Microsoft Entra ID, server-side sessions, derived CSRF | Immediate database-checked revocation on every request |
+| Enterprise OIDC & sessions | OIDC authorization code flow with PKCE for Microsoft Entra ID, server-side sessions, derived CSRF | Immediate database-checked revocation on every request; tested against a stub IdP only, on an unmerged PR branch |
 | Warm-up mode controller | Multi-state cold-start controller (`not_configured`, `warming_up`, `live`) | Scores backfill without opening cases; holds sparse senders |
 | Customer policy service | Stores customer-owned AML procedural manuals with database immutability | SHA-256 tamper verification; fail-closed exclusion rules |
 | Tenant-scoped storage | Durable system of record for events, processing state, scores, reviews, customer profiles, and audit | Row-level security and split database roles are used; configuration is not published |
